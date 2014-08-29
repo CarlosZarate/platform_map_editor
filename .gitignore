@@ -3,6 +3,6 @@
 bin/Release/*
 bin/Debug/*
 obj/*
-april_quest_map_editor.cbp
-Urho3D.dll
-april_quest_map_editor.depend
+*.cbp
+*.dll
+*.depend
