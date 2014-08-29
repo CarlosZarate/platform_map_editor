@@ -200,8 +200,6 @@ void HelloGUI::CreateScene()
     TileSetMap = SSTileSet->GetSpriteMapping();
 
     physicsWorld->DrawDebugGeometry();
-    PreviewNode->RemoveAllComponents();
-    PreviewNode->Remove();
 
     drawDebug_ = true; // Set DrawDebugGeometry() to true
 }
