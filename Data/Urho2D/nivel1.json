@@ -1,0 +1,644 @@
+
+{
+	"allowSleep" : true,
+	"autoClearForces" : true,
+	"body" : 
+	[
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 2,
+					"name" : "tipo"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								2.249769210815430,
+								2.249769210815430,
+								-0.2570514678955078,
+								0.2570514678955078
+							],
+							"y" : 
+							[
+								1.001798868179321,
+								1.509638547897339,
+								1.509638547897339,
+								0.9934455752372742
+							]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								0.2570514678955078,
+								0.2570514678955078,
+								-0.2570514678955078,
+								-0.2570514678955078
+							],
+							"y" : 
+							[
+								-1.004796981811523,
+								0.9934455752372742,
+								1.509638547897339,
+								-1.509642124176025
+							]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								2.248478889465332,
+								2.248478889465332,
+								0.2570514678955078,
+								-0.2570514678955078
+							],
+							"y" : 
+							[
+								-1.509642124176025,
+								-1.012602806091309,
+								-1.004796981811523,
+								-1.509642124176025
+							]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "body4",
+			"position" : 
+			{
+				"x" : 3.969516754150391,
+				"y" : 1.042051315307617
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 2,
+					"name" : "tipo"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								1.003445625305176,
+								1.003445625305176,
+								-1.003447055816650,
+								-1.003447055816650
+							],
+							"y" : 
+							[
+								-0.4860064983367920,
+								0.4860067367553711,
+								0.4860067367553711,
+								-0.4860064983367920
+							]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "body3",
+			"position" : 
+			{
+				"x" : -2.774877071380615,
+				"y" : 1.530646085739136
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 2,
+					"name" : "tipo"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 0.5, 0.5, -0.5, -0.5 ],
+							"y" : 
+							[
+								-0.7534828186035156,
+								0.7534828186035156,
+								0.7534828186035156,
+								-0.7534828186035156
+							]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "body2",
+			"position" : 
+			{
+				"x" : 0.7191729545593262,
+				"y" : -2.708086967468262
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 2,
+					"name" : "tipo"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								0.9935159683227539,
+								0.9935159683227539,
+								-0.9935159683227539,
+								-0.9935159683227539
+							],
+							"y" : 
+							[
+								-0.9975242614746094,
+								0.9975242614746094,
+								0.9975242614746094,
+								-0.9975242614746094
+							]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "body1",
+			"position" : 
+			{
+				"x" : 4.220159530639648,
+				"y" : -4.461868286132813
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 2,
+					"name" : "tipo"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 14.15439319610596, 13.68864345550537, 13.68864345550537 ],
+							"y" : [ -5.646220684051514, -0.1023981571197510, -5.646220684051514 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 14.15439319610596, 14.15439319610596, 13.68864345550537 ],
+							"y" : [ -5.646220684051514, 0.9600323438644409, -0.1023981571197510 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 14.15439319610596, -0.3674443662166596, 13.68864345550537 ],
+							"y" : [ 0.9600323438644409, -0.06944820284843445, -0.1023981571197510 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 14.15439319610596, -0.8646036386489868, -0.3674443662166596 ],
+							"y" : [ 0.9600323438644409, 0.9378751516342163, -0.06944820284843445 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 14.15439319610596, 13.68864345550537, 13.68864345550537 ],
+							"y" : [ -5.656346797943115, -5.656346797943115, -13.67324066162109 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 14.15439319610596, 14.15439319610596, 13.68864345550537 ],
+							"y" : [ -14.10045337677002, -5.656346797943115, -13.67324066162109 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 14.15439319610596, 13.68864345550537, -0.4009155035018921 ],
+							"y" : [ -14.10045337677002, -13.67324066162109, -13.64993381500244 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 14.15439319610596, -0.4009155035018921, -0.9038301706314087 ],
+							"y" : [ -14.10045337677002, -13.64993381500244, -14.10045337677002 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ -0.3674443662166596, -0.9038301706314087, -0.4009155035018921 ],
+							"y" : [ -0.06944820284843445, -14.10045337677002, -13.64993381500244 ]
+						}
+					}
+				},
+				
+				{
+					"customProperties" : 
+					[
+						
+						{
+							"int" : 2,
+							"name" : "tipo"
+						}
+					],
+					"density" : 1,
+					"filter-categoryBits" : 7,
+					"name" : "block",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ -0.3674443662166596, -0.8646036386489868, -0.9038301706314087 ],
+							"y" : [ -0.06944820284843445, 0.9378751516342163, -14.10045337677002 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "body0",
+			"position" : 
+			{
+				"x" : -5.416336536407471,
+				"y" : 4.093286037445068
+			},
+			"type" : 0
+		}
+	],
+	"collisionbitplanes" : 
+	{
+		"names" : 
+		[
+			"bitplane1",
+			"bitplane2",
+			"bitplane3",
+			"bitplane4",
+			"bitplane5",
+			"bitplane6",
+			"bitplane7",
+			"bitplane8",
+			"bitplane9",
+			"bitplane10",
+			"bitplane11",
+			"bitplane12",
+			"bitplane13",
+			"bitplane14",
+			"bitplane15",
+			"bitplane16",
+			"bitplane17",
+			"bitplane18",
+			"bitplane19",
+			"bitplane20",
+			"bitplane21",
+			"bitplane22",
+			"bitplane23",
+			"bitplane24",
+			"bitplane25",
+			"bitplane26",
+			"bitplane27",
+			"bitplane28",
+			"bitplane29",
+			"bitplane30",
+			"bitplane31",
+			"bitplane32"
+		]
+	},
+	"continuousPhysics" : true,
+	"gravity" : 0,
+	"image" : 
+	[
+		
+		{
+			"aspectScale" : 1,
+			"body" : -1,
+			"center" : 
+			{
+				"x" : 7.500759601593018,
+				"y" : -7.500121116638184
+			},
+			"corners" : 
+			{
+				"x" : 
+				[
+					0.0007596015930175781,
+					15.00075912475586,
+					15.00075912475586,
+					0.0007596015930175781
+				],
+				"y" : 
+				[
+					-15.00012111663818,
+					-15.00012111663818,
+					-0.0001211166381835938,
+					-0.0001211166381835938
+				]
+			},
+			"file" : "map.png",
+			"filter" : 1,
+			"glDrawElements" : [ 0, 1, 2, 2, 3, 0 ],
+			"glTexCoordPointer" : [ 0.0, 0.0, 1, 0.0, 1, 1, 0.0, 1 ],
+			"glVertexPointer" : 
+			[
+				0.0007596015930175781,
+				-15.00012111663818,
+				15.00075912475586,
+				-15.00012111663818,
+				15.00075912475586,
+				-0.0001211166381835938,
+				0.0007596015930175781,
+				-0.0001211166381835938
+			],
+			"name" : "image0",
+			"opacity" : 0.5,
+			"scale" : 15.0
+		}
+	],
+	"positionIterations" : 3,
+	"stepsPerSecond" : 60.0,
+	"subStepping" : false,
+	"velocityIterations" : 8,
+	"warmStarting" : true
+}

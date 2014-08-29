@@ -1,0 +1,29 @@
+{
+  "type": [
+    "Tile",
+    "Body",
+    "Entorno",
+    "NPC"
+  ],
+  "Tile": [
+    "Textura1",
+    "Textura2",
+    "Textura3",
+    "Textura4"
+  ],
+  "Body": [
+    "Box",
+    "Circle"
+  ],
+  "Entorno": [
+    "Obj1",
+    "Obj2",
+    "Obj3",
+    "Obj4"
+  ],
+  "NPC":[
+    "Enemmy1",
+    "Enemmy2",
+    "Enemmy3"
+  ]
+}

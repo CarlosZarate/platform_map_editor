@@ -1,0 +1,24 @@
+<TextureAtlas imagePath="April.png">
+	<SubTexture name="dead_01" x="0" y="124" width="65" height="60"/>
+	<SubTexture name="dead_02" x="0" y="124" width="65" height="60"/>
+	<SubTexture name="dead_03" x="0" y="124" width="65" height="60"/>
+	<SubTexture name="dead_04" x="0" y="0" width="65" height="60"/>
+	<SubTexture name="dead_05" x="0" y="62" width="65" height="60"/>
+	<SubTexture name="dead_06" x="0" y="310" width="65" height="60"/>
+	<SubTexture name="dead_07" x="0" y="186" width="65" height="60"/>
+	<SubTexture name="dead_08" x="0" y="248" width="65" height="60"/>
+	<SubTexture name="dead_09" x="0" y="372" width="65" height="60"/>
+	<SubTexture name="dead_10" x="0" y="434" width="65" height="60"/>
+	<SubTexture name="idle_01" x="67" y="124" width="48" height="60"/>
+	<SubTexture name="idle_02" x="117" y="124" width="48" height="60"/>
+	<SubTexture name="idle_03" x="117" y="62" width="48" height="60"/>
+	<SubTexture name="idle_04" x="117" y="124" width="48" height="60"/>
+	<SubTexture name="run_01" x="67" y="62" width="48" height="60"/>
+	<SubTexture name="run_02" x="67" y="0" width="48" height="60"/>
+	<SubTexture name="run_03" x="67" y="248" width="48" height="60"/>
+	<SubTexture name="run_04" x="67" y="310" width="48" height="60"/>
+	<SubTexture name="run_05" x="67" y="186" width="48" height="60"/>
+	<SubTexture name="run_06" x="67" y="434" width="48" height="60"/>
+	<SubTexture name="run_07" x="117" y="0" width="48" height="60"/>
+	<SubTexture name="run_08" x="67" y="372" width="48" height="60"/>
+</TextureAtlas>
