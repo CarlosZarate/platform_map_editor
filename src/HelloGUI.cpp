@@ -183,6 +183,27 @@ void HelloGUI::CreateScene()
     bgstaticSprite->SetSprite(bgsprite);
     bgstaticSprite->SetLayer(1);
 
+    SharedPtr<Node> BodyNode(scene_->CreateChild("PolygonNode"));
+    RigidBody2D* PolygonBody = BodyNode->CreateComponent<RigidBody2D>();
+    PolygonBody->SetBodyType(BT_STATIC);
+    PolygonBody->SetLinearDamping(0.0f);
+    PolygonBody->SetAngularDamping(0.0f);
+    CollisionPolygon2D* shape = BodyNode->CreateComponent<CollisionPolygon2D>();
+
+    PODVector<Vector2> vertices;
+    vertices.Push(Vector2(2,0));
+    vertices.Push(Vector2(2,-1));
+    vertices.Push(Vector2(4,-1));
+    vertices.Push(Vector2(6,3));
+    vertices.Push(Vector2(4,5));
+    vertices.Push(Vector2(0,5));
+    vertices.Push(Vector2(0,0));
+    vertices.Push(Vector2(1,0));
+    vertices.Push(Vector2(1,4));
+    vertices.Push(Vector2(3,4));
+    vertices.Push(Vector2(3,0));
+
+    shape->SetVertices(vertices);
     // Get animation set
     AnimationSet2D* animationSet = cache->GetResource<AnimationSet2D>("Urho2D/April.scml");
     if (!animationSet)
