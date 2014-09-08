@@ -210,11 +210,11 @@ void HelloGUI::CreateScene()
         return;
 
     SharedPtr<Node> PreviewNode(objprev_scene->CreateChild("PrevNode"));
-    PreviewNode->SetPosition(Vector3(0.0f, 0.0f, -1.0f));
+    PreviewNode->SetPosition(Vector3(0.0f, -0.2f, -1.0f));
 
     AnimatedSprite2D* animatedSprite = PreviewNode->CreateComponent<AnimatedSprite2D>();
     // Set animation
-    animatedSprite->SetAnimation(animationSet, "run");
+    animatedSprite->SetAnimation(animationSet, "Run");
     animatedSprite->SetLayer(2);
 
     SpriteSheet2D* SSTileSet = cache->GetResource<SpriteSheet2D>("Urho2D/tileset.xml");
