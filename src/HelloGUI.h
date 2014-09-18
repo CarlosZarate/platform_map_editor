@@ -23,6 +23,7 @@
 #pragma once
 
 #include "Sample.h"
+#include "CollisionPolygon2D.h"
 
 namespace Urho3D
 {
@@ -42,6 +43,11 @@ class Sprite;
 ///     - Dragging UIElements
 ///     - Displaying tooltips
 ///     - Accessing available Events data (eventData)
+
+Vector2  dragPointBegin;
+Vector2  dragPointEnd;
+bool     drawRectangle = false;
+
 class HelloGUI : public Sample
 {
     OBJECT(HelloGUI);
@@ -69,11 +75,22 @@ private:
     void HandleMouseMove(StringHash eventType, VariantMap& eventData);
     /// Handle the mouse click event.
     void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData);
-    /// Create nodes
-    void CreateNode(Vector3 position);
-    /// Dimension map game
-    Rect GetMatrixLength();
+    void HandleMouseButtonUp(StringHash eventType, VariantMap& eventData);
 
+    /// Create nodes
+    void    CreateNode(Vector3 position);
+    /// Dimension map game
+    Rect    GetMatrixLength();
+
+    void    CreateGrids();
+
+    void    DrawRectangle(Rect rect);
+
+    void    CreateRectangleFixture();
+
+    bool    IntersectionBody(Vector2 point);
+
+    bool    DeletetFixtureWorld(Vector2 point);
 
     /// Construct the scene content.
     void CreateScene();
@@ -110,7 +127,6 @@ private:
     void HandleInWindow(StringHash eventType, VariantMap& eventData);
     void HandleOutWindow(StringHash eventType, VariantMap& eventData);
 
-    void CreateGrids();
     /// The Window.
     SharedPtr<Window> window_;
     /// The UI's root UIElement.
@@ -138,7 +154,10 @@ private:
     /// Camera object.
     Camera* camera_;
     /// Vector sharedNodes
-    Vector<SharedPtr<Node> > vectorNodes_;
+    Vector<SharedPtr<Node> >    vectorNodes_;
+    Vector<CollisionPolygon2D*> vectorShapes;
+    SharedPtr<Node>             mapNode;
+    RigidBody2D*                mapRigidBody;
 };
 
 

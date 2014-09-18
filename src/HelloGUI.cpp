@@ -67,7 +67,7 @@
 
 #include "DebugNew.h"
 
-/// Librerias Box2D
+// Librerias Box2D
 #include "CollisionBox2D.h"
 #include "CollisionCircle2D.h"
 #include "CollisionEdge2D.h"
@@ -91,8 +91,8 @@ static const StringHash VAR_MOVESPEED("MoveSpeed");
 static const StringHash VAR_ROTATESPEED("RotateSpeed");
 
 // Detect node screen
-Node* pickedNode;
-RigidBody2D* dummyBody;
+//Node* pickedNode;
+//RigidBody2D* dummyBody;
 
 DEFINE_APPLICATION_MAIN(HelloGUI)
 
@@ -130,6 +130,7 @@ void HelloGUI::Start()
     // Hook up to the frame update events
     SubscribeToEvents();
 }
+
 void HelloGUI::CreateScene()
 {
     scene_ = new Scene(context_);
@@ -183,27 +184,6 @@ void HelloGUI::CreateScene()
     bgstaticSprite->SetSprite(bgsprite);
     bgstaticSprite->SetLayer(1);
 
-    SharedPtr<Node> BodyNode(scene_->CreateChild("PolygonNode"));
-    RigidBody2D* PolygonBody = BodyNode->CreateComponent<RigidBody2D>();
-    PolygonBody->SetBodyType(BT_STATIC);
-    PolygonBody->SetLinearDamping(0.0f);
-    PolygonBody->SetAngularDamping(0.0f);
-    CollisionPolygon2D* shape = BodyNode->CreateComponent<CollisionPolygon2D>();
-
-    PODVector<Vector2> vertices;
-    vertices.Push(Vector2(2,0));
-    vertices.Push(Vector2(2,-1));
-    vertices.Push(Vector2(4,-1));
-    vertices.Push(Vector2(6,3));
-    vertices.Push(Vector2(4,5));
-    vertices.Push(Vector2(0,5));
-    vertices.Push(Vector2(0,0));
-    vertices.Push(Vector2(1,0));
-    vertices.Push(Vector2(1,4));
-    vertices.Push(Vector2(3,4));
-    vertices.Push(Vector2(3,0));
-
-    shape->SetVertices(vertices);
     // Get animation set
     AnimationSet2D* animationSet = cache->GetResource<AnimationSet2D>("Urho2D/April.scml");
     if (!animationSet)
@@ -223,32 +203,151 @@ void HelloGUI::CreateScene()
     physicsWorld->DrawDebugGeometry();
 
     drawDebug_ = true; // Set DrawDebugGeometry() to true
+
+    // Incializando nodo y body del mapa
+    mapNode = scene_->CreateChild("mapNode");
+    mapRigidBody = mapNode->CreateComponent<RigidBody2D>();
+    mapRigidBody->SetBodyType(BT_STATIC);
+    mapRigidBody->SetLinearDamping(0.0f);
+    mapRigidBody->SetAngularDamping(0.0f);
 }
 
-void HelloGUI::HandleMouseMove(StringHash eventType, VariantMap& eventData)
+// Dibuja los bordes de un  un rectangulo
+void HelloGUI::DrawRectangle(Rect rect)
 {
-    Input* input = GetSubsystem<Input>();
+    DebugRenderer* debug = scene_->GetComponent<DebugRenderer>();
 
-    if (input->GetMouseButtonDown(1))
+    Vector3 point1(rect.min_, 0);
+    Vector3 point3(rect.max_, 0);
+    Vector3 point2(point1.x_, point3.y_, 0);
+    Vector3 point4(point3.x_, point1.y_, 0);
+    Color color(1, 0, 0, 1);
+
+    debug->AddLine( point1, point2, color, false );
+    debug->AddLine( point2, point3, color, false );
+    debug->AddLine( point3, point4, color, false );
+    debug->AddLine( point4, point1, color, false );
+}
+
+// Crea un rentangule CollisionShape (fixture)
+void HelloGUI::CreateRectangleFixture()
+{
+    Node* mapNode = scene_->GetChild("mapNode", true);
+    CollisionPolygon2D* rectangleShape = mapNode->CreateComponent<CollisionPolygon2D>();
+
+    if(dragPointEnd.x_ > dragPointBegin.x_)
     {
-        Input* input = GetSubsystem<Input>();
-        PhysicsWorld2D* physicsWorld = scene_->GetComponent<PhysicsWorld2D>();
-        RigidBody2D* rigidBody = physicsWorld->GetRigidBody(input->GetMousePosition().x_, input->GetMousePosition().y_, M_MAX_UNSIGNED, camera_); // Raycast for RigidBody2Ds to pick
-
-        if (rigidBody)
+        if(dragPointEnd.y_ > dragPointBegin.y_)
         {
-            std::cout << "Existe body" << std::endl;
+            dragPointEnd.x_ += 0.25f;
+            dragPointEnd.y_ += 0.25f;
+            dragPointBegin.x_ -= 0.25f;
+            dragPointBegin.y_ -= 0.25f;
         }
         else
         {
-            Vector3 positionBody = Vector3(GetMousePositionXY().x_, GetMousePositionXY().y_, 0);
-            positionBody.x_ = (floor(positionBody.x_/0.5f) * 0.5f) + 0.25f;
-            positionBody.y_ = (floor(positionBody.y_/0.5f) * 0.5f) + 0.25f;
-            this->CreateNode(positionBody);
+            dragPointEnd.x_ += 0.25f;
+            dragPointEnd.y_ -= 0.25f;
+            dragPointBegin.x_ -= 0.25f;
+            dragPointBegin.y_ += 0.25f;
         }
     }
+    else
+    {
+        if(dragPointEnd.y_ > dragPointBegin.y_)
+        {
+            dragPointEnd.x_ -= 0.25f;
+            dragPointEnd.y_ += 0.25f;
+            dragPointBegin.x_ += 0.25f;
+            dragPointBegin.y_ -= 0.25f;
+        }
+        else
+        {
+            dragPointEnd.x_ -= 0.25f;
+            dragPointEnd.y_ -= 0.25f;
+            dragPointBegin.x_ += 0.25f;
+            dragPointBegin.y_ += 0.25f;
+        }
+    }
+
+    Vector2 point1(dragPointBegin);
+    Vector2 point3(dragPointEnd);
+    Vector2 point2(point3.x_, point1.y_);
+    Vector2 point4(point1.x_, point3.y_);
+
+    PODVector<Vector2> vertices;
+    vertices.Push(point1);
+    vertices.Push(point2);
+    vertices.Push(point3);
+    vertices.Push(point4);
+
+    rectangleShape->SetVertices(vertices);
+    mapRigidBody->  AddCollisionShape2D(rectangleShape);
+    vectorShapes.Push(rectangleShape);
+    std::cout<<vectorShapes.Size()<<std::endl;
 }
 
+// Verifica colisiones verificando un punto con los fixtures en el mundo box2D
+bool HelloGUI::IntersectionBody(Vector2 point)
+{
+    for (unsigned index = 0; index < vectorShapes.Size(); index++)
+    {
+        b2Fixture* testfixt = vectorShapes.At(index)->GetFixture();
+
+        if ( testfixt->TestPoint( b2Vec2(point.x_, point.y_) ) )
+        {
+            std::cout << "Existe fixture" << std::endl;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Verifica y eliimina el CollsionSahpe dado en un punto
+bool HelloGUI::DeletetFixtureWorld(Vector2 point)
+{
+    for (unsigned index = 0; index < vectorShapes.Size(); index++)
+    {
+        b2Fixture* fixture = vectorShapes.At(index)->GetFixture();
+
+        if ( fixture->TestPoint( b2Vec2(point.x_, point.y_) ) )
+        {
+            mapNode->RemoveComponent(vectorShapes.At(index));
+            vectorShapes.Erase(index);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+void HelloGUI::HandleMouseMove(StringHash eventType, VariantMap& eventData)
+{
+    dragPointEnd    = GetMousePositionXY();
+    dragPointEnd.x_ = (floor(dragPointEnd.x_/0.5f) * 0.5f) + 0.25f;
+    dragPointEnd.y_ = (floor(dragPointEnd.y_/0.5f) * 0.5f) + 0.25f;
+
+    Vector2 point1(dragPointBegin);
+    Vector2 point3(dragPointEnd);
+    Vector2 point2(point3.x_, point1.y_);
+    Vector2 point4(point1.x_, point3.y_);
+
+    if (IntersectionBody(point1))
+        drawRectangle = false;
+
+    if (IntersectionBody(point2))
+        drawRectangle = false;
+
+    if (IntersectionBody(point3))
+        drawRectangle = false;
+
+    if (IntersectionBody(point4))
+        drawRectangle = false;
+}
+
+// Crea un nodo con con todos sus componentes (textua y body) del tamaño 32px
 void HelloGUI::CreateNode(Vector3 position)
 {
     SharedPtr<Node> box(scene_->CreateChild("Box"));
@@ -270,6 +369,7 @@ void HelloGUI::CreateNode(Vector3 position)
     std::cout<<vectorNodes_.Size()<<std::endl;
 }
 
+// Calcula los limites que ocupa los body y los fixtures creados en el mapa
 Rect HelloGUI::GetMatrixLength()
 {
     Rect dimension(0, 0, 0, 0);
@@ -309,24 +409,50 @@ Rect HelloGUI::GetMatrixLength()
 void HelloGUI::HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
 {
     Input* input = GetSubsystem<Input>();
-    PhysicsWorld2D* physicsWorld = scene_->GetComponent<PhysicsWorld2D>();
-    RigidBody2D* rigidBody = physicsWorld->GetRigidBody(input->GetMousePosition().x_, input->GetMousePosition().y_, M_MAX_UNSIGNED, camera_); // Raycast for RigidBody2Ds to pick
 
-    //std::cout << "Body position: " << positionBody.x_ << ", " << positionBody.y_ << std::endl;
+    // Punto inicial
+    dragPointBegin = GetMousePositionXY();
+    dragPointBegin.x_ = (floor(dragPointBegin.x_/0.5f) * 0.5f) + 0.25f ;
+    dragPointBegin.y_ = (floor(dragPointBegin.y_/0.5f) * 0.5f) + 0.25f ;
 
-    if (rigidBody)
+    // Punto final
+    dragPointEnd = GetMousePositionXY();
+    dragPointEnd.x_ = (floor(dragPointEnd.x_/0.5f) * 0.5f) + 0.25f;
+    dragPointEnd.y_ = (floor(dragPointEnd.y_/0.5f) * 0.5f) + 0.25f ;
+
+    if (input->GetMouseButtonDown(1))
     {
-        std::cout << "Existe body" << std::endl;
+        std::cout << "Button 1 Down" << std::endl;
+        drawRectangle = true;
     }
-    else
+
+    if (input->GetMouseButtonDown(4))
     {
-        Vector3 positionBody = Vector3(GetMousePositionXY().x_, GetMousePositionXY().y_, 0);
-        positionBody.x_ = (floor(positionBody.x_/0.5f) * 0.5f) + 0.25f;
-        positionBody.y_ = (floor(positionBody.y_/0.5f) * 0.5f) + 0.25f;
-        this->CreateNode(positionBody);
+        // Elimando fixture crear al hacer clic nuevamente
+        Vector2 fixturePoint(dragPointBegin);
+
+        if ( DeletetFixtureWorld(fixturePoint) )
+            std::cout << "Se ha eliminado el fixture!" << std::endl;
+
+
+        std::cout << "Button 4 Down" << std::endl;
     }
 
     SubscribeToEvent(E_MOUSEMOVE, HANDLER(HelloGUI, HandleMouseMove));
+    SubscribeToEvent(E_MOUSEBUTTONUP, HANDLER(HelloGUI, HandleMouseButtonUp));
+}
+
+void HelloGUI::HandleMouseButtonUp(StringHash eventType, VariantMap& eventData)
+{
+    std::cout << "Mouse button 3 UP" << std::endl;
+
+    if (drawRectangle)
+        CreateRectangleFixture();
+
+    drawRectangle = false;
+
+    UnsubscribeFromEvent(E_MOUSEMOVE);
+    UnsubscribeFromEvent(E_MOUSEBUTTONUP);
 }
 
 Vector2 HelloGUI::GetMousePositionXY()
@@ -399,7 +525,6 @@ void HelloGUI::HandleOutWindow(StringHash eventType, VariantMap& eventData)
 {
     std::cout<<"Salir"<<std::endl;
 }
-
 
 void HelloGUI::HandleChangeType(StringHash eventType, VariantMap& eventData)
 {
@@ -560,13 +685,18 @@ void HelloGUI::HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (drawDebug_)
         physicsWorld->DrawDebugGeometry();
 
-    this->CreateGrids();
-
     // Take the frame time step, which is stored as a float
     float timeStep = eventData[P_TIMESTEP].GetFloat();
 
     // Move the camera, scale movement with time step
     MoveCamera(timeStep);
+
+    // Dibuja las griilas del mapa
+    this->CreateGrids();
+
+    // Dibuja un rectangulo si el mouse es arrastrado en pantalla.
+    if (drawRectangle)
+        this->DrawRectangle( Rect(dragPointBegin, dragPointEnd) );
 
 
     Graphics* graphics = GetSubsystem<Graphics>();
@@ -581,3 +711,8 @@ void HelloGUI::HandleDragMoveViewport(StringHash eventType, VariantMap& eventDat
    int posY=draggedElement->GetPosition().y_; // Get current Window top position
    GetSubsystem<Renderer>()->GetViewport(1)->SetRect(IntRect(posX, posY, posX + draggedElement->GetWidth() , posY + draggedElement->GetHeight()));
 }
+
+
+
+
+
