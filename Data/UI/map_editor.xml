@@ -31,69 +31,101 @@
     <element style="Panel">
         <attribute name="Layout Spacing" value="10" />
         <attribute name="Layout Border" value="0 4 0 4" />
-            <element style="ListRow">
-                <attribute name="Layout Spacing" value="8" />
-                <element type="Text">
-                    <attribute name="Text" value="Tipo de Objeto" />
-                </element>
-                <element type="DropDownList">
-                    <attribute name="Name" value="ObjeList" />
-                    <attribute name="Min Size" value="100 0" />
-                    <attribute name="Max Size" value="100 2147483647" />
-                    <attribute name="Resize Popup" value="true" />
-                    <element type="Window" internal="true" popup="true" style="none">
-                        <element type="ListView" internal="true" style="none">
-                            <element type="BorderImage" internal="true" style="none">
-                                <element internal="true" style="none">
-                                    <element type="Text" style="FileSelectorFilterText">
-                                        <attribute name="Text" value="Tile" />
-                                    </element>
-                                    <element type="Text" style="FileSelectorFilterText">
-                                        <attribute name="Text" value="Body" />
-                                    </element>
-                                    <element type="Text" style="FileSelectorFilterText">
-                                        <attribute name="Text" value="Entorno" />
-                                    </element>
-                                    <element type="Text" style="FileSelectorFilterText">
-                                        <attribute name="Text" value="NPC" />
-                                    </element>
+        <element style="ListRow">
+            <attribute name="Layout Spacing" value="8" />
+            <element type="Text">
+                <attribute name="Text" value="Tipo de Objeto" />
+            </element>
+            <element type="DropDownList">
+                <attribute name="Name" value="ObjeList" />
+                <attribute name="Min Size" value="100 0" />
+                <attribute name="Max Size" value="100 2147483647" />
+                <attribute name="Resize Popup" value="true" />
+                <element type="Window" internal="true" popup="true" style="none">
+                    <element type="ListView" internal="true" style="none">
+                        <element type="BorderImage" internal="true" style="none">
+                            <element internal="true" style="none">
+                                <element type="Text" style="FileSelectorFilterText">
+                                    <attribute name="Text" value="Escenario" />
+                                </element>
+                                <element type="Text" style="FileSelectorFilterText">
+                                    <attribute name="Text" value="Wall" />
+                                </element>
+                                <element type="Text" style="FileSelectorFilterText">
+                                    <attribute name="Text" value="Entorno" />
+                                </element>
+                                <element type="Text" style="FileSelectorFilterText">
+                                    <attribute name="Text" value="Characters" />
                                 </element>
                             </element>
                         </element>
                     </element>
                 </element>
             </element>
-                <element type="ListView" style="PanelView">
-                    <attribute name="Name" value="FileList" />
-                    <attribute name="Min Size" value="0 100" />
-                    <attribute name="Max Size" value="1200 1000" />
-                    <element type="ScrollBar" internal="true" style="none">
-                        <attribute name="Size" value="230 16" />
-                        <element type="Button" internal="true" style="none" />
-                        <element type="Slider" internal="true" style="none">
-                            <attribute name="Position" value="16 0" />
-                            <attribute name="Size" value="198 16" />
-                            <element type="BorderImage" internal="true" style="none" />
-                        </element>
-                        <element type="Button" internal="true" style="none">
-                            <attribute name="Position" value="214 0" />
-                        </element>
-                    </element>
-                    <element type="ScrollBar" internal="true" style="none">
-                        <attribute name="Size" value="16 200" />
-                        <element type="Button" internal="true" style="none" />
-                        <element type="Slider" internal="true" style="none">
-                            <attribute name="Position" value="0 16" />
-                            <attribute name="Size" value="16 168" />
-                            <element type="BorderImage" internal="true" style="none" />
-                        </element>
-                        <element type="Button" internal="true" style="none">
-                            <attribute name="Position" value="0 184" />
-                        </element>
-                    </element>
-                    <element type="BorderImage" internal="true" style="none">
-                        <element internal="true" style="none"/>
-                    </element>
+        </element>
+        <element type="ListView" style="PanelView">
+            <attribute name="Name" value="FileList" />
+            <attribute name="Min Size" value="0 100" />
+            <attribute name="Max Size" value="1200 1000" />
+            <element type="ScrollBar" internal="true" style="none">
+                <attribute name="Size" value="230 16" />
+                <element type="Button" internal="true" style="none" />
+                <element type="Slider" internal="true" style="none">
+                    <attribute name="Position" value="16 0" />
+                    <attribute name="Size" value="198 16" />
+                    <element type="BorderImage" internal="true" style="none" />
                 </element>
-            </element>      
+                <element type="Button" internal="true" style="none">
+                    <attribute name="Position" value="214 0" />
+                </element>
+            </element>
+            <element type="ScrollBar" internal="true" style="none">
+                <attribute name="Size" value="16 200" />
+                <element type="Button" internal="true" style="none" />
+                <element type="Slider" internal="true" style="none">
+                    <attribute name="Position" value="0 16" />
+                    <attribute name="Size" value="16 168" />
+                    <element type="BorderImage" internal="true" style="none" />
+                </element>
+                <element type="Button" internal="true" style="none">
+                    <attribute name="Position" value="0 184" />
+                </element>
+            </element>
+            <element type="BorderImage" internal="true" style="none">
+                <element internal="true" style="none"/>
+            </element>
+        </element>
+        <element type="ListView" style="PanelView">
+            <attribute name="Name" value="FileList" />
+            <attribute name="Min Size" value="0 100" />
+            <attribute name="Max Size" value="1200 1000" />
+            <element type="ScrollBar" internal="true" style="none">
+                <attribute name="Size" value="230 16" />
+                <element type="Button" internal="true" style="none" />
+                <element type="Slider" internal="true" style="none">
+                    <attribute name="Position" value="16 0" />
+                    <attribute name="Size" value="198 16" />
+                    <element type="BorderImage" internal="true" style="none" />
+                </element>
+                <element type="Button" internal="true" style="none">
+                    <attribute name="Position" value="214 0" />
+                </element>
+            </element>
+            <element type="ScrollBar" internal="true" style="none">
+                <attribute name="Size" value="16 200" />
+                <element type="Button" internal="true" style="none" />
+                <element type="Slider" internal="true" style="none">
+                    <attribute name="Position" value="0 16" />
+                    <attribute name="Size" value="16 168" />
+                    <element type="BorderImage" internal="true" style="none" />
+                </element>
+                <element type="Button" internal="true" style="none">
+                    <attribute name="Position" value="0 184" />
+                </element>
+            </element>
+            <element type="BorderImage" internal="true" style="none">
+                <element internal="true" style="none"/>
+            </element>
+        </element>
+    </element>     
 </element>

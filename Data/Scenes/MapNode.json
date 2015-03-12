@@ -1,0 +1,12 @@
+{
+	"blocks": [],
+	"playerpost": "0 0",
+	"characters": [
+		{
+			"name": "Player",
+			"source": "April.scml",
+			"anim": true,
+			"radio": 0.16
+		}
+	]
+}

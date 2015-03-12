@@ -1,15 +1,13 @@
 {
   "type": [
-    "Tile",
-    "Body",
+    "Escenario",
+    "Wall",
     "Entorno",
-    "NPC"
+    "Characters"
   ],
-  "Tile": [
-    "Textura1",
-    "Textura2",
-    "Textura3",
-    "Textura4"
+  "Escenario": [
+    "Top",
+    "Floor"
   ],
   "Body": [
     "Box",
@@ -21,9 +19,9 @@
     "Obj3",
     "Obj4"
   ],
-  "NPC":[
-    "Enemmy1",
-    "Enemmy2",
-    "Enemmy3"
+  "Characters":[
+    "Player",
+    "Enemy",
+    "NPC"
   ]
 }

@@ -48,12 +48,13 @@ Sample::Sample(Context* context) :
 void Sample::Setup()
 {
     // Modify engine startup parameters
-    engineParameters_["WindowTitle"] = GetTypeName();
+    engineParameters_["WindowTitle"] = "Map Editor";
     engineParameters_["LogName"]     = GetSubsystem<FileSystem>()->GetAppPreferencesDir("urho3d", "logs") + GetTypeName() + ".log";
     engineParameters_["FullScreen"]  = false;
     engineParameters_["Headless"]    = false;
     engineParameters_["WindowWidth"] = 1440;
     engineParameters_["WindowHeight"]= 800;
+    engineParameters_["VSync"] = true;
 }
 
 void Sample::Start()

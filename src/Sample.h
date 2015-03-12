@@ -68,6 +68,8 @@ protected:
     /// Camera scene node.
     SharedPtr<Node> cameraNode_;
 
+    Vector<Vector2> mapnode;
+
 private:
     /// Set custom window Title & Icon
     void SetWindowTitleAndIcon();

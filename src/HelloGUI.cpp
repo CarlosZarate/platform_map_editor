@@ -58,6 +58,9 @@
 #include "JSONValue.h"
 #include "File.h"
 #include "Deserializer.h"
+#include "TmxFile2D.h"
+#include "TileMap2D.h"
+#include "TileMapLayer2D.h"
 
 #include "Script.h"
 #include "ScriptFile.h"
@@ -72,17 +75,6 @@
 #include "CollisionCircle2D.h"
 #include "CollisionEdge2D.h"
 #include "CollisionPolygon2D.h"
-#include "ConstraintDistance2D.h"
-#include "ConstraintFriction2D.h"
-#include "ConstraintGear2D.h"
-#include "ConstraintMotor2D.h"
-#include "ConstraintMouse2D.h"
-#include "ConstraintPrismatic2D.h"
-#include "ConstraintPulley2D.h"
-#include "ConstraintRevolute2D.h"
-#include "ConstraintRope2D.h"
-#include "ConstraintWeld2D.h"
-#include "ConstraintWheel2D.h"
 #include "RigidBody2D.h"
 
 // Number of static sprites to draw
@@ -137,11 +129,12 @@ void HelloGUI::CreateScene()
     scene_->CreateComponent<Octree>();
     scene_->CreateComponent<DebugRenderer>();
     PhysicsWorld2D* physicsWorld = scene_->CreateComponent<PhysicsWorld2D>();
+    Graphics* graphics = GetSubsystem<Graphics>();
 
     objprev_scene = new Scene(context_);
     objprev_scene->CreateComponent<Octree>();
 
-    Graphics* graphics = GetSubsystem<Graphics>();
+    Graphics* graphidiscreetpositioncs = GetSubsystem<Graphics>();
 
     ObjPrevCameraNode_ = objprev_scene->CreateChild("Camera");
     // Set camera's position
@@ -165,14 +158,13 @@ void HelloGUI::CreateScene()
     // Create camera
     cameraNode_ = scene_->CreateChild("Camera");
     // Set camera's position
-    cameraNode_->SetPosition(Vector3(0.0f, 0.0f, 0.0f)); // Note that Z setting is discarded; use camera.zoom instead (see MoveCamera() below for example)
+    cameraNode_->SetPosition(Vector3(5.0f, 5.0f, 0.0f)); // Note that Z setting is discarded; use camera.zoom instead (see MoveCamera() below for example)
 
     camera_ = cameraNode_->CreateComponent<Camera>();
     camera_->SetOrthographic(true);
 
     graphics = GetSubsystem<Graphics>();
     camera_->SetOrthoSize((float)graphics->GetHeight() * PIXEL_SIZE);
-    ///
 
     ResourceCache* cache = GetSubsystem<ResourceCache>();
 
@@ -197,19 +189,64 @@ void HelloGUI::CreateScene()
     animatedSprite->SetAnimation(animationSet, "Run");
     animatedSprite->SetLayer(2);
 
+    nodeWall = scene_->CreateChild("NodoWall");
+
     SpriteSheet2D* SSTileSet = cache->GetResource<SpriteSheet2D>("Urho2D/tileset.xml");
     TileSetMap = SSTileSet->GetSpriteMapping();
+
+    TmxFile2D* tmxFile = cache->GetResource<TmxFile2D>("Urho2D/map2.tmx");
+    if (!tmxFile)
+        return;
+
+    SharedPtr<Node> tileMapNode(nodeWall->CreateChild("TileMap"));
+    tileMapNode->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+
+    TileMap2D* tileMap = tileMapNode->CreateComponent<TileMap2D>();
+    // Set animation
+    tileMap->SetTmxFile(tmxFile);
+
+    // Set camera's position
+    const TileMapInfo2D& info = tileMap->GetInfo();
+    float x = info.GetMapWidth() * 0.5f;
+    float y = info.GetMapHeight() * 0.5f;
+
+    std::cout<<tileMap->GetNumLayers()<<std::endl;
+    TileMapLayer2D* layer0 = tileMap->GetLayer(0);
+    layer0->SetDrawOrder(1001);
 
     physicsWorld->DrawDebugGeometry();
 
     drawDebug_ = true; // Set DrawDebugGeometry() to true
 
-    // Incializando nodo y body del mapa
-    mapNode = scene_->CreateChild("mapNode");
-    mapRigidBody = mapNode->CreateComponent<RigidBody2D>();
-    mapRigidBody->SetBodyType(BT_STATIC);
-    mapRigidBody->SetLinearDamping(0.0f);
-    mapRigidBody->SetAngularDamping(0.0f);
+    Sprite2D* topsprite = cache->GetResource<Sprite2D>("Urho2D/top.png");
+    if (!topsprite)
+        return;
+
+    Sprite2D* floorsprite = cache->GetResource<Sprite2D>("Urho2D/floor.png");
+    if (!floorsprite)
+        return;
+
+    /*floorNode = nodeWall->CreateChild("FloorSprite");
+    floorNode->SetPosition(Vector3(7.5f, 7.5f, 0.0f));
+    StaticSprite2D* floorstaticsprite = floorNode->CreateComponent<StaticSprite2D>();
+    floorstaticsprite->SetSprite(floorsprite);
+    floorstaticsprite->SetLayer(-500);
+
+    topNode = nodeWall->CreateChild("TopSprite");
+    topNode->SetPosition(Vector3(7.5f, 7.5f, 0.0f));
+    taticSprite2D* topstaticsprite = topNode->CreateComponent<StaticSprite2D>();
+    topstaticsprite->SetSprite(topsprite);
+    topstaticsprite->SetLayer(1000);*/
+
+
+    Sprite2D* object = cache->GetResource<Sprite2D>("Urho2D/object.png");
+    if (!object)
+        return;
+    nodePlayer = scene_->CreateChild("NodoPlayer");
+    StaticSprite2D* objectsprite = nodePlayer->CreateComponent<StaticSprite2D>();
+	objectsprite->SetSprite(object);
+	objectsprite->SetColor(Color::BLUE);
+	objectsprite->SetLayer(1000);
 }
 
 // Dibuja los bordes de un  un rectangulo
@@ -232,59 +269,65 @@ void HelloGUI::DrawRectangle(Rect rect)
 // Crea un rentangule CollisionShape (fixture)
 void HelloGUI::CreateRectangleFixture()
 {
-    Node* mapNode = scene_->GetChild("mapNode", true);
-    CollisionPolygon2D* rectangleShape = mapNode->CreateComponent<CollisionPolygon2D>();
+    Vector2 point1, point2;
 
     if(dragPointEnd.x_ > dragPointBegin.x_)
     {
         if(dragPointEnd.y_ > dragPointBegin.y_)
         {
-            dragPointEnd.x_ += 0.25f;
-            dragPointEnd.y_ += 0.25f;
-            dragPointBegin.x_ -= 0.25f;
-            dragPointBegin.y_ -= 0.25f;
+            point1 = Vector2(dragPointBegin);
+            point2 = Vector2(dragPointEnd);
         }
         else
         {
-            dragPointEnd.x_ += 0.25f;
-            dragPointEnd.y_ -= 0.25f;
-            dragPointBegin.x_ -= 0.25f;
-            dragPointBegin.y_ += 0.25f;
+            point1 = Vector2(dragPointBegin.x_, dragPointEnd.y_);
+            point2 = Vector2(dragPointEnd.x_,dragPointBegin.y_);
         }
     }
     else
     {
         if(dragPointEnd.y_ > dragPointBegin.y_)
         {
-            dragPointEnd.x_ -= 0.25f;
-            dragPointEnd.y_ += 0.25f;
-            dragPointBegin.x_ += 0.25f;
-            dragPointBegin.y_ -= 0.25f;
+            point1 = Vector2(dragPointEnd.x_, dragPointBegin.y_);
+            point2 = Vector2(dragPointBegin.x_,dragPointEnd.y_);
         }
         else
         {
-            dragPointEnd.x_ -= 0.25f;
-            dragPointEnd.y_ -= 0.25f;
-            dragPointBegin.x_ += 0.25f;
-            dragPointBegin.y_ += 0.25f;
+            point1 = Vector2(dragPointEnd);
+            point2 = Vector2(dragPointBegin);
         }
     }
 
-    Vector2 point1(dragPointBegin);
-    Vector2 point3(dragPointEnd);
-    Vector2 point2(point3.x_, point1.y_);
-    Vector2 point4(point1.x_, point3.y_);
+    for (float i = point1.x_; i <= point2.x_; i = i+0.5f)
+    {
+        for (float j = point1.y_; j <= point2.y_;j = j+0.5f)
+        {
+            if( j > 0 && i > 0 && !IntersectionBody(Vector2(i,j)))
+            {
+                Node* node  = nodeWall->CreateChild("RigidBody");
+                node->SetPosition(Vector3(i, j, 0.0f));
 
-    PODVector<Vector2> vertices;
-    vertices.Push(point1);
-    vertices.Push(point2);
-    vertices.Push(point3);
-    vertices.Push(point4);
+                // Create rigid body
+                RigidBody2D* body = node->CreateComponent<RigidBody2D>();
+                body->SetBodyType(BT_STATIC);
 
-    rectangleShape->SetVertices(vertices);
-    mapRigidBody->  AddCollisionShape2D(rectangleShape);
-    vectorShapes.Push(rectangleShape);
-    std::cout<<vectorShapes.Size()<<std::endl;
+                // Create box
+                CollisionBox2D* box = node->CreateComponent<CollisionBox2D>();
+                // Set size
+                box->SetSize(Vector2(0.5f, 0.5f));
+                // Set density
+                box->SetDensity(1.0f);
+                // Set friction
+                box->SetFriction(0.5f);
+                // Set restitution
+                box->SetRestitution(0.1f);
+
+                box->SetCategoryBits(32768);
+
+                vectorShapes.Push(box);
+            }
+        }
+    }
 }
 
 // Verifica colisiones verificando un punto con los fixtures en el mundo box2D
@@ -296,7 +339,6 @@ bool HelloGUI::IntersectionBody(Vector2 point)
 
         if ( testfixt->TestPoint( b2Vec2(point.x_, point.y_) ) )
         {
-            std::cout << "Existe fixture" << std::endl;
             return true;
         }
     }
@@ -313,38 +355,13 @@ bool HelloGUI::DeletetFixtureWorld(Vector2 point)
 
         if ( fixture->TestPoint( b2Vec2(point.x_, point.y_) ) )
         {
-            mapNode->RemoveComponent(vectorShapes.At(index));
+            vectorShapes.At(index)->GetNode()->Remove();
             vectorShapes.Erase(index);
             return true;
         }
     }
 
     return false;
-}
-
-
-void HelloGUI::HandleMouseMove(StringHash eventType, VariantMap& eventData)
-{
-    dragPointEnd    = GetMousePositionXY();
-    dragPointEnd.x_ = (floor(dragPointEnd.x_/0.5f) * 0.5f) + 0.25f;
-    dragPointEnd.y_ = (floor(dragPointEnd.y_/0.5f) * 0.5f) + 0.25f;
-
-    Vector2 point1(dragPointBegin);
-    Vector2 point3(dragPointEnd);
-    Vector2 point2(point3.x_, point1.y_);
-    Vector2 point4(point1.x_, point3.y_);
-
-    if (IntersectionBody(point1))
-        drawRectangle = false;
-
-    if (IntersectionBody(point2))
-        drawRectangle = false;
-
-    if (IntersectionBody(point3))
-        drawRectangle = false;
-
-    if (IntersectionBody(point4))
-        drawRectangle = false;
 }
 
 // Crea un nodo con con todos sus componentes (textua y body) del tamaño 32px
@@ -382,7 +399,6 @@ Rect HelloGUI::GetMatrixLength()
         SharedPtr<Node> node = vectorNodes_[i];
 
         Vector3 position = node->GetPosition();
-        std::cout << "Node " << i << ": " << position.x_ << ", " << position.y_ << std::endl;
 
         if ( position.x_ > RTop.x_ )
             RTop.x_ = position.x_;
@@ -396,56 +412,58 @@ Rect HelloGUI::GetMatrixLength()
         if ( position.y_ < LBotton.y_ )
             LBotton.y_ = position.y_;
     }
-    std::cout << "--------------------------------" << std::endl;
-
-    dimension = Rect(LBotton.x_, RTop.y_,
-                        RTop.x_, LBotton.y_);
-
-    std::cout << "IntRect: (" << LBotton.x_ << "," << RTop.y_ << ") , "
-                              << RTop.x_ << "," << LBotton.y_ << std::endl;
     return dimension;
 }
 
 void HelloGUI::HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
 {
-    Input* input = GetSubsystem<Input>();
+    using namespace MouseButtonDown;
 
     // Punto inicial
-    dragPointBegin = GetMousePositionXY();
-    dragPointBegin.x_ = (floor(dragPointBegin.x_/0.5f) * 0.5f) + 0.25f ;
-    dragPointBegin.y_ = (floor(dragPointBegin.y_/0.5f) * 0.5f) + 0.25f ;
-
+    dragPointBegin = GetDiscreetPosition();
     // Punto final
-    dragPointEnd = GetMousePositionXY();
-    dragPointEnd.x_ = (floor(dragPointEnd.x_/0.5f) * 0.5f) + 0.25f;
-    dragPointEnd.y_ = (floor(dragPointEnd.y_/0.5f) * 0.5f) + 0.25f ;
+    dragPointEnd = dragPointBegin;
 
-    if (input->GetMouseButtonDown(1))
+    if (GetSubsystem<UI>()->GetFocusElement())
+        return;
+
+    switch (currentFunction)
     {
-        std::cout << "Button 1 Down" << std::endl;
-        drawRectangle = true;
-    }
-
-    if (input->GetMouseButtonDown(4))
-    {
-        // Elimando fixture crear al hacer clic nuevamente
-        Vector2 fixturePoint(dragPointBegin);
-
-        if ( DeletetFixtureWorld(fixturePoint) )
-            std::cout << "Se ha eliminado el fixture!" << std::endl;
-
-
-        std::cout << "Button 4 Down" << std::endl;
+        case DRAWWALL:
+            DrawWall(eventData[P_BUTTON].GetInt());
+            break;
+        case DRAWENV:
+            prevPositionLayer = GetDiscreetPosition();
+            break;
+        case DRAWCHAR:
+            nodePlayer->SetPosition2D(GetDiscreetPosition());
+            break;
     }
 
     SubscribeToEvent(E_MOUSEMOVE, HANDLER(HelloGUI, HandleMouseMove));
     SubscribeToEvent(E_MOUSEBUTTONUP, HANDLER(HelloGUI, HandleMouseButtonUp));
 }
 
+
+void HelloGUI::HandleMouseMove(StringHash eventType, VariantMap& eventData)
+{
+    switch (currentFunction)
+    {
+        case DRAWWALL:
+            dragPointEnd = GetDiscreetPosition();
+            break;
+        case DRAWENV:
+            /*MoveLayerEnv(GetDiscreetPosition() - prevPositionLayer);
+            prevPositionLayer = GetDiscreetPosition();*/
+            break;
+        case DRAWCHAR:
+            nodePlayer->SetPosition2D(GetDiscreetPosition());
+            break;
+    }
+}
+
 void HelloGUI::HandleMouseButtonUp(StringHash eventType, VariantMap& eventData)
 {
-    std::cout << "Mouse button 3 UP" << std::endl;
-
     if (drawRectangle)
         CreateRectangleFixture();
 
@@ -453,6 +471,31 @@ void HelloGUI::HandleMouseButtonUp(StringHash eventType, VariantMap& eventData)
 
     UnsubscribeFromEvent(E_MOUSEMOVE);
     UnsubscribeFromEvent(E_MOUSEBUTTONUP);
+}
+
+void HelloGUI::DrawWall(int button)
+{
+    switch (button)
+    {
+        case 1:
+            drawRectangle = true;
+            break;
+        case 4:
+            DeletetFixtureWorld(dragPointBegin);
+            break;
+    }
+}
+
+void HelloGUI::DrawCharacter()
+{
+}
+
+void HelloGUI::MoveLayerEnv(Vector2 envmov)
+{
+    if(currentEnv == TOP)
+        topNode->Translate2D(envmov);
+    if(currentEnv == FLOOR)
+        floorNode->Translate2D(envmov);
 }
 
 Vector2 HelloGUI::GetMousePositionXY()
@@ -463,6 +506,15 @@ Vector2 HelloGUI::GetMousePositionXY()
 
     Vector3 worldPoint = camera_->ScreenToWorldPoint(screenPoint);
     return Vector2(worldPoint.x_, worldPoint.y_);
+}
+
+Vector2 HelloGUI::GetDiscreetPosition()
+{
+    Vector2 discreetposition = GetMousePositionXY();
+    discreetposition.x_ = (floor(discreetposition.x_/0.5f) * 0.5f) + 0.25f ;
+    discreetposition.y_ = (floor(discreetposition.y_/0.5f) * 0.5f) + 0.25f ;
+
+    return discreetposition;
 }
 
 void HelloGUI::SetupViewport()
@@ -513,17 +565,6 @@ void HelloGUI::InitWindow()
 
     SubscribeToEvent(DropDownType, E_ITEMSELECTED, HANDLER(HelloGUI, HandleChangeType));
     SubscribeToEvent(itemlist, E_ITEMSELECTED, HANDLER(HelloGUI, HandleLoadPreview));
-    SubscribeToEvent(ui->GetRoot(), E_HOVERBEGIN, HANDLER(HelloGUI, HandleInWindow));
-    SubscribeToEvent(ui->GetRoot(), E_HOVEREND, HANDLER(HelloGUI, HandleOutWindow));
-}
-
-void HelloGUI::HandleInWindow(StringHash eventType, VariantMap& eventData)
-{
-    std::cout<<"Entre"<<std::endl;
-}
-void HelloGUI::HandleOutWindow(StringHash eventType, VariantMap& eventData)
-{
-    std::cout<<"Salir"<<std::endl;
 }
 
 void HelloGUI::HandleChangeType(StringHash eventType, VariantMap& eventData)
@@ -547,6 +588,36 @@ void HelloGUI::HandleLoadPreview(StringHash eventType, VariantMap& eventData)
         StaticSprite2D* staticSprite = PreviewNode->CreateComponent<StaticSprite2D>();
         staticSprite->SetSprite(currenttile);
         staticSprite->SetLayer(2);
+    }
+    if(CurrentType == "Escenario")
+    {
+        ListView* ItemList = static_cast<ListView*>(eventData["Element"].GetPtr());
+        Text* SelectedText = static_cast<Text*>(ItemList->GetSelectedItem());
+        if(SelectedText->GetText() == "Top")
+        {
+            currentEnv = TOP;
+        }
+        if(SelectedText->GetText() == "Floor")
+        {
+            currentEnv = FLOOR;
+        }
+    }
+    if(CurrentType == "Characters")
+    {
+        ListView* ItemList = static_cast<ListView*>(eventData["Element"].GetPtr());
+        Text* SelectedText = static_cast<Text*>(ItemList->GetSelectedItem());
+        if(SelectedText->GetText() == "Player")
+        {
+            currentCharType = PLAYER;
+        }
+        if(SelectedText->GetText() == "Enemy")
+        {
+            currentCharType = ENEMY;
+        }
+        if(SelectedText->GetText() == "NPC")
+        {
+            currentCharType = NPC;
+        }
     }
 }
 
@@ -578,26 +649,12 @@ void HelloGUI::LoadSelectedType(String type)
             itemlist->InsertItem(itemlist->GetNumItems(), item);
         }
     }
-
-}
-
-void HelloGUI::HandleControlClicked(StringHash eventType, VariantMap& eventData)
-{
-    // Get the Text control acting as the Window's title
-    Text* windowTitle = static_cast<Text*>(window_->GetChild("WindowTitle", true));
-
-    // Get control that was clicked
-    UIElement* clicked = static_cast<UIElement*>(eventData[UIMouseClick::P_ELEMENT].GetPtr());
-
-    String name = "...?";
-    if (clicked)
-    {
-        // Get the name of the control that was clicked
-        name = clicked->GetName();
-    }
-
-    // Update the Window's title text
-    windowTitle->SetText("Hello " + name + "!");
+    if(type == "Wall")
+        currentFunction = DRAWWALL;
+    if(type == "Characters")
+        currentFunction = DRAWCHAR;
+    if(type == "Escenario")
+        currentFunction = DRAWENV;
 }
 
 void HelloGUI::CreateGrids()
@@ -605,36 +662,32 @@ void HelloGUI::CreateGrids()
     DebugRenderer* debug = scene_->GetComponent<DebugRenderer>();
 
     /// Lineas verticales
-    for (float i = -12; i <= 30; i+=0.5f)
+    for (float i = 0; i <= 50; i+=0.5f)
     {
-        debug->AddLine( Vector3(i, -10, 0),
-                        Vector3(i, 10, 0),
+        debug->AddLine( Vector3(i, 0, 0),
+                        Vector3(i, 50, 0),
                         Color(0, 1, 1, 1),
                         false );
     }
 
     /// Lineas horizontales
-    for (float j = -10; j <= 10; j+=0.5)
+    for (float j = 0; j <= 50; j+=0.5)
     {
-        debug->AddLine( Vector3(-12, j, 0),
-                        Vector3(30, j, 0),
+        debug->AddLine( Vector3(0, j, 0),
+                        Vector3(50, j, 0),
                         Color(0, 1, 1, 1),
                         false );
     }
 
-    debug->AddLine(Vector3(-12, 0, 0), Vector3(12, 0, 0), Color(1, 0, 0, 0),  false);
-    debug->AddLine(Vector3(0, 12, 0), Vector3(0, -12, 0), Color(0, 0, 1, 0),  false);
+    debug->AddLine(Vector3(-3, 0, 0), Vector3(50, 0, 0), Color(1, 0, 0, 0),  false);
+    debug->AddLine(Vector3(0, 50, 0), Vector3(0, -3, 0), Color(0, 0, 1, 0),  false);
 
 }
 
 void HelloGUI::MoveCamera(float timeStep)
 {
-    // Do not move if the UI has a focused element (the console)
-    if (GetSubsystem<UI>()->GetFocusElement())
-        return;
 
     Input* input = GetSubsystem<Input>();
-
     // Movement speed as world units per second
     const float MOVE_SPEED = 4.0f;
 
@@ -659,13 +712,51 @@ void HelloGUI::MoveCamera(float timeStep)
         Camera* camera = cameraNode_->GetComponent<Camera>();
         camera->SetZoom(camera->GetZoom() * 0.99f);
     }
+
+    if (input->GetKeyPress(KEY_F5))
+    {
+        File saveFile(context_, GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Scenes/nodo_map.xml", FILE_WRITE);
+        nodeWall->SaveXML(saveFile);
+
+        JSONFile* data = new JSONFile(context_);
+        JSONValue MapNodeJson = data->CreateRoot();
+        JSONValue blockarray = MapNodeJson.CreateChild("blocks",JSON_ARRAY);
+
+        for (unsigned index = 0; index < vectorShapes.Size(); index++)
+        {
+            Vector2 prevector = vectorShapes.At(index)->GetNode()->GetPosition2D()*2;
+            IntVector2 vector2(prevector.x_,prevector.y_);
+            blockarray.AddIntVector2(vector2);
+        }
+
+        MapNodeJson.SetVector2("playerpost",nodePlayer->GetPosition2D());
+        JSONValue characters = MapNodeJson.CreateChild("characters",JSON_ARRAY);
+        JSONValue character = characters.CreateChild(JSON_OBJECT);
+        character.SetString("name","Player");
+        character.SetString("source","April.scml");
+        character.SetBool("anim",true);
+        character.SetFloat("radio",0.16f);
+
+        File file(context_,GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Scenes/MapNode.json", FILE_WRITE);
+        data->Save(file);
+    }
+    if (input->GetKeyPress(KEY_F7))
+    {
+        nodeWall->RemoveAllChildren();
+        nodeWall->RemoveAllComponents();
+        ResourceCache* cache = GetSubsystem<ResourceCache>();
+        XMLFile* nodoXMLFile = cache->GetResource<XMLFile>("Scenes/nodo_map.xml");
+        XMLElement nodoXML(nodoXMLFile->GetRoot());
+        nodeWall->LoadXML(nodoXML);
+        std::cout<<"Nodo cargado"<<std::endl;
+    }
+
 }
 
 void HelloGUI::SubscribeToEvents()
 {
     // Subscribe HandleUpdate() function for processing update events
     SubscribeToEvent(E_UPDATE, HANDLER(HelloGUI, HandleUpdate));
-
 
     // Subscribe to mouse click
     SubscribeToEvent(E_MOUSEBUTTONDOWN, HANDLER(HelloGUI, HandleMouseButtonDown));

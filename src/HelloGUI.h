@@ -71,6 +71,26 @@ protected:
 
 private:
 
+    enum Function
+    {
+        DRAWWALL,
+        DRAWCHAR,
+        DRAWENV
+    };
+
+    enum EnvLayer
+    {
+        FLOOR,
+        TOP,
+    };
+
+    enum TypeCharacter
+    {
+        PLAYER,
+        ENEMY,
+        NPC
+    };
+
     /// Handle the mouse move event.
     void HandleMouseMove(StringHash eventType, VariantMap& eventData);
     /// Handle the mouse click event.
@@ -104,8 +124,6 @@ private:
     void HandleDragMove(StringHash eventType, VariantMap& eventData);
     /// Handle drag end for the fish button.
     void HandleDragEnd(StringHash eventType, VariantMap& eventData);
-    /// Handle any UI control being clicked.
-    void HandleControlClicked(StringHash eventType, VariantMap& eventData);
     /// Handle close button pressed and released.
     void HandleChangeType(StringHash eventType, VariantMap& eventData);
     /// Handle the logic update event.
@@ -124,9 +142,6 @@ private:
 
     void LoadSelectedType(String type);
 
-    void HandleInWindow(StringHash eventType, VariantMap& eventData);
-    void HandleOutWindow(StringHash eventType, VariantMap& eventData);
-
     /// The Window.
     SharedPtr<Window> window_;
     /// The UI's root UIElement.
@@ -140,6 +155,9 @@ private:
     /// Objetct preview camera scene node.
     SharedPtr<Node> ObjPrevCameraNode_;
 
+    SharedPtr<Node> floorNode;
+    SharedPtr<Node> topNode;
+
     JSONValue rootjson;
 
     HashMap< String, SharedPtr< Sprite2D > > TileSetMap;
@@ -149,15 +167,32 @@ private:
     /// Get mouse position in 2D world coordinates.
     Vector2 GetMousePositionXY();
 
+    Vector2 GetDiscreetPosition();
+
+    Function currentFunction = DRAWWALL;
+    EnvLayer currentEnv;
+    TypeCharacter currentCharType;
+
     /// Flag for drawing debug geometry.
     bool drawDebug_;
     /// Camera object.
     Camera* camera_;
     /// Vector sharedNodes
-    Vector<SharedPtr<Node> >    vectorNodes_;
-    Vector<CollisionPolygon2D*> vectorShapes;
-    SharedPtr<Node>             mapNode;
-    RigidBody2D*                mapRigidBody;
+    Vector<SharedPtr<Node> > vectorNodes_;
+    Vector<CollisionShape2D*> vectorShapes;
+    Vector<IntVector2> mapNode;
+
+    SharedPtr<Node> nodeWall;
+    SharedPtr<Node> nodePlayer;
+    Vector<Node*> EnemyList;
+    Vector<Node*> NPCyList;
+
+    void MoveLayerEnv(Vector2 envmov);
+    void DrawWall(int button);
+    void DrawCharacter();
+
+
+    Vector2 prevPositionLayer;
 };
 
 
