@@ -14,7 +14,7 @@
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="TileMap2D" id="6">
-			<attribute name="Tmx File" value="TmxFile2D;Urho2D/map2.tmx" />
+			<attribute name="Tmx File" value="TmxFile2D;Urho2D/nivel1.tmx" />
 		</component>
 	</node>
 </node>

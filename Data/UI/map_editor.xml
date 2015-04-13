@@ -46,10 +46,10 @@
                         <element type="BorderImage" internal="true" style="none">
                             <element internal="true" style="none">
                                 <element type="Text" style="FileSelectorFilterText">
-                                    <attribute name="Text" value="Escenario" />
+                                    <attribute name="Text" value="Body" />
                                 </element>
                                 <element type="Text" style="FileSelectorFilterText">
-                                    <attribute name="Text" value="Wall" />
+                                    <attribute name="Text" value="Escenario" />
                                 </element>
                                 <element type="Text" style="FileSelectorFilterText">
                                     <attribute name="Text" value="Entorno" />
@@ -96,7 +96,7 @@
             </element>
         </element>
         <element type="ListView" style="PanelView">
-            <attribute name="Name" value="FileList" />
+            <attribute name="Name" value="SecondList" />
             <attribute name="Min Size" value="0 100" />
             <attribute name="Max Size" value="1200 1000" />
             <element type="ScrollBar" internal="true" style="none">
@@ -125,6 +125,16 @@
             </element>
             <element type="BorderImage" internal="true" style="none">
                 <element internal="true" style="none"/>
+            </element>
+        </element>
+        <element type="Button">
+            <attribute name="Name" value="ProcessButton" />
+            <attribute name="Min Size" value="80 17" />
+            <attribute name="Max Size" value="80 17" />
+            <element type="Text">
+                <attribute name="Horiz Alignment" value="Center" />
+                <attribute name="Vert Alignment" value="Center" />
+                <attribute name="Text" value="Procesar" />
             </element>
         </element>
     </element>     

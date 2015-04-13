@@ -24,6 +24,8 @@
 
 #include "Sample.h"
 #include "CollisionPolygon2D.h"
+#include "LinkedList.h"
+#include "PoligonVertex.h"
 
 namespace Urho3D
 {
@@ -34,113 +36,130 @@ class Scene;
 class Sprite;
 }
 
-/// A simple 'HelloWorld' GUI created purely from code.
-/// This sample demonstrates:
-///     - Creation of controls and building a UI hierarchy
-///     - Loading UI style from XML and applying it to controls
-///     - Handling of global and per-control events
-/// For more advanced users (beginners can skip this section):
-///     - Dragging UIElements
-///     - Displaying tooltips
-///     - Accessing available Events data (eventData)
+enum Function
+{
+    DRAWBODY,
+    DRAWCHAR,
+    DRAWENV
+};
+
+enum EnvLayer
+{
+    FLOOR,
+    TOP,
+};
+
+enum TypeCharacter
+{
+    PLAYER,
+    ENEMY,
+    NPC
+};
+
+enum TypeBody
+{
+    PLATFORM,
+    POLIGONBODY,
+    VERTEXPOLIGON,
+    MIDLEPLATFORM,
+    MOVPLATFORM
+};
+
+enum TypeKeyFunction
+{
+    NONE,
+    TRASLATE,
+    ADD,
+    REMOVE
+};
+
+struct EarTriangle
+{
+    EarTriangle(Vector2 p1,Vector2 p2,Vector2 p3)
+    {
+        p1_ = p1;
+        p2_ = p2;
+        p3_ = p3;
+    }
+    Vector2 p1_,p2_,p3_;
+};
 
 Vector2  dragPointBegin;
 Vector2  dragPointEnd;
 bool     drawRectangle = false;
 
-class HelloGUI : public Sample
+class MapEditor : public Sample
 {
-    OBJECT(HelloGUI);
+    OBJECT(MapEditor);
 
 public:
-    /// Construct.
-    HelloGUI(Context* context);
-
-    /// Setup after engine initialization and before running the main loop.
+    MapEditor(Context* context);
     virtual void Start();
 
-protected:
-    /// Return XML patch instructions for screen joystick layout for a specific sample app, if any.
-    virtual String GetScreenJoystickPatchString() const { return
-        "<patch>"
-        "    <add sel=\"/element/element[./attribute[@name='Name' and @value='Hat0']]\">"
-        "        <attribute name=\"Is Visible\" value=\"false\" />"
-        "    </add>"
-        "</patch>";
-    }
-
 private:
-
-    enum Function
-    {
-        DRAWWALL,
-        DRAWCHAR,
-        DRAWENV
-    };
-
-    enum EnvLayer
-    {
-        FLOOR,
-        TOP,
-    };
-
-    enum TypeCharacter
-    {
-        PLAYER,
-        ENEMY,
-        NPC
-    };
-
-    /// Handle the mouse move event.
     void HandleMouseMove(StringHash eventType, VariantMap& eventData);
-    /// Handle the mouse click event.
     void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData);
     void HandleMouseButtonUp(StringHash eventType, VariantMap& eventData);
 
-    /// Create nodes
-    void    CreateNode(Vector3 position);
-    /// Dimension map game
-    Rect    GetMatrixLength();
+    void CreateGrids();
+    void DrawRectangle(Rect rect);
+    void CreatePlatform(Vector2 p1, Vector2 p2, String typeplatform);
+    void CreateMovablePlatform(Vector2 p1, Vector2 p2);
+    void CreateEnemy(Vector2 p1);
+    void DrawWall(int button);
 
-    void    CreateGrids();
+    void DrawCharacter();
 
-    void    DrawRectangle(Rect rect);
-
-    void    CreateRectangleFixture();
-
-    bool    IntersectionBody(Vector2 point);
-
-    bool    DeletetFixtureWorld(Vector2 point);
-
-    /// Construct the scene content.
     void CreateScene();
-    /// Create and initialize a Window control.
+    void CreatePreviewScene();
     void InitWindow();
-    /// Create a draggable fish button.
-    void CreateDraggableFish();
-    /// Handle drag begin for the fish button.
-    void HandleDragBegin(StringHash eventType, VariantMap& eventData);
-    /// Handle drag move for the fish button.
-    void HandleDragMove(StringHash eventType, VariantMap& eventData);
-    /// Handle drag end for the fish button.
-    void HandleDragEnd(StringHash eventType, VariantMap& eventData);
-    /// Handle close button pressed and released.
+
     void HandleChangeType(StringHash eventType, VariantMap& eventData);
-    /// Handle the logic update event.
     void HandleUpdate(StringHash eventType, VariantMap& eventData);
-    /// Handle auxiliary viewport drag/resize.
-    void HandleDragMoveViewport(StringHash eventType, VariantMap& eventData);
-
     void HandleLoadPreview(StringHash eventType, VariantMap& eventData);
+    void HandleProcess(StringHash eventType, VariantMap& eventData);
+    void HandleSelectSecondList(StringHash eventType, VariantMap& eventData);
 
-    /// Set up a viewport for displaying the scene.
     void SetupViewport();
-    /// Read input and moves the camera.
     void MoveCamera(float timeStep);
-    /// Subscribe to application-wide logic update events.
     void SubscribeToEvents();
 
+    void LoadMap();
+    void SaveMap();
+
     void LoadSelectedType(String type);
+
+    void DrawPoligon();
+
+    void ProcessPoligonPhysics();
+
+    void bodyFunctions();
+
+    void SelectPoligon(Vector<PoligonVertex*>* poligon);
+
+    void UnselectPoligon(Vector<PoligonVertex*>* poligon);
+
+    float Sign (Vector2 p1, Vector2 p2, Vector2 p3);
+
+    bool isInTriangle (Vector2 pt, Vector2 v1, Vector2 v2, Vector2 v3);
+
+    bool ccw (Vector2 p1, Vector2 p2, Vector2 p3);
+
+    Vector2 nextVertex(Vector<PoligonVertex*>* poligon, PoligonVertex* P);
+    Vector2 prevVertex(Vector<PoligonVertex*>* poligon, PoligonVertex* P);
+
+    void cleanVertex(Vector<PoligonVertex*>* poligon);
+
+    void insertVertex(Vector<PoligonVertex*>* poligon, PoligonVertex* newvertex);
+
+    Vector<PoligonVertex*>* CreatePoligon();
+
+    PoligonVertex* CreatePoligonVertex(Vector2 pos);
+
+    bool RemovePoligon(PoligonVertex* p);
+    bool RemovePoligon(String key);
+
+    void LoadPoligonList();
 
     /// The Window.
     SharedPtr<Window> window_;
@@ -155,12 +174,14 @@ private:
     /// Objetct preview camera scene node.
     SharedPtr<Node> ObjPrevCameraNode_;
 
-    SharedPtr<Node> floorNode;
-    SharedPtr<Node> topNode;
+    PlatformData* currentpd;
+    SharedPtr<TileMap2D> tileMap;
 
     JSONValue rootjson;
 
+    int PoligonCounter = 0;
     HashMap< String, SharedPtr< Sprite2D > > TileSetMap;
+    HashMap< String, Vector<PoligonVertex*>* > PoligonMap;
 
     String CurrentType;
 
@@ -169,30 +190,38 @@ private:
 
     Vector2 GetDiscreetPosition();
 
-    Function currentFunction = DRAWWALL;
-    EnvLayer currentEnv;
-    TypeCharacter currentCharType;
+    Function currentFunction = DRAWBODY;
+    TypeCharacter currentCharType = PLAYER;
+    TypeBody currentBodyType = POLIGONBODY;
+    TypeKeyFunction currentKeyFunction = NONE;
 
     /// Flag for drawing debug geometry.
     bool drawDebug_;
+    bool selectObject_ = false;
     /// Camera object.
     Camera* camera_;
-    /// Vector sharedNodes
-    Vector<SharedPtr<Node> > vectorNodes_;
-    Vector<CollisionShape2D*> vectorShapes;
-    Vector<IntVector2> mapNode;
+
+    Vector<EarTriangle*> earTriagles;
+    Vector< Vector<EarTriangle*>* > ListPoligonTriangle;
+    Vector<Node*> ListNodePoligonsPhysics;
+    Vector<Node*> CuadrilateralPhysics;
+    Vector<PlatformData*> PlatformsList;
+    Vector<ObjectData*> ObjectList;
 
     SharedPtr<Node> nodeWall;
     SharedPtr<Node> nodePlayer;
     Vector<Node*> EnemyList;
     Vector<Node*> NPCyList;
-
-    void MoveLayerEnv(Vector2 envmov);
-    void DrawWall(int button);
-    void DrawCharacter();
+    String typebody = "Wall";
 
 
     Vector2 prevPositionLayer;
+    Vector<PoligonVertex*>* CurrentPoligon;
+    Vector< Vector<PoligonVertex*>* > ListPoligon;
+    PoligonVertex* CurrentVertex;
+    PoligonVertex* CurrentPrevVertex;
+    PoligonVertex* CurrentNextVertex;
+
 };
 
 

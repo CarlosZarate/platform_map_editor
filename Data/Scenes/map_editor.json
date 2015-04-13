@@ -1,7 +1,7 @@
 {
   "type": [
     "Escenario",
-    "Wall",
+    "Body",
     "Entorno",
     "Characters"
   ],
@@ -9,9 +9,12 @@
     "Top",
     "Floor"
   ],
-  "Wall": [
+  "Body": [
     "Platform",
-    "Wall"
+    "MidlePlatform",
+    "MovPlatform",
+    "PoligonBody",
+    "VertexPoligon"
   ],
   "Entorno": [
     "Obj1",
