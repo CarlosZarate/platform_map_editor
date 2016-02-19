@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "Application.h"
+#include "Urho3D/Engine/Application.h"
 
 namespace Urho3D
 {
@@ -49,7 +49,7 @@ using namespace Urho3D;
 class Sample : public Application
 {
     // Enable type information.
-    OBJECT(Sample);
+    URHO3D_OBJECT(Sample, Application);
 
 public:
     /// Construct.

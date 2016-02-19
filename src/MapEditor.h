@@ -23,9 +23,9 @@
 #pragma once
 
 #include "Sample.h"
-#include "CollisionPolygon2D.h"
-#include "LinkedList.h"
-#include "PoligonVertex.h"
+#include "Urho3D/Urho2D/CollisionPolygon2D.h"
+#include "Urho3D/Container/LinkedList.h"
+#include "PolygonVertex.h"
 
 namespace Urho3D
 {
@@ -90,7 +90,7 @@ bool     drawRectangle = false;
 
 class MapEditor : public Sample
 {
-    OBJECT(MapEditor);
+    URHO3D_OBJECT(MapEditor, Sample);
 
 public:
     MapEditor(Context* context);
@@ -135,9 +135,9 @@ private:
 
     void bodyFunctions();
 
-    void SelectPoligon(Vector<PoligonVertex*>* poligon);
+    void SelectPoligon(Vector<PolygonVertex *>* poligon);
 
-    void UnselectPoligon(Vector<PoligonVertex*>* poligon);
+    void UnselectPoligon(Vector<PolygonVertex *>* poligon);
 
     float Sign (Vector2 p1, Vector2 p2, Vector2 p3);
 
@@ -145,18 +145,18 @@ private:
 
     bool ccw (Vector2 p1, Vector2 p2, Vector2 p3);
 
-    Vector2 nextVertex(Vector<PoligonVertex*>* poligon, PoligonVertex* P);
-    Vector2 prevVertex(Vector<PoligonVertex*>* poligon, PoligonVertex* P);
+    Vector2 nextVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * P);
+    Vector2 prevVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * P);
 
-    void cleanVertex(Vector<PoligonVertex*>* poligon);
+    void cleanVertex(Vector<PolygonVertex *>* poligon);
 
-    void insertVertex(Vector<PoligonVertex*>* poligon, PoligonVertex* newvertex);
+    void insertVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * newvertex);
 
-    Vector<PoligonVertex*>* CreatePoligon();
+    Vector<PolygonVertex *>* CreatePoligon();
 
-    PoligonVertex* CreatePoligonVertex(Vector2 pos);
+    PolygonVertex * CreatePoligonVertex(Vector2 pos);
 
-    bool RemovePoligon(PoligonVertex* p);
+    bool RemovePoligon(PolygonVertex * p);
     bool RemovePoligon(String key);
 
     void LoadPoligonList();
@@ -181,7 +181,7 @@ private:
 
     int PoligonCounter = 0;
     HashMap< String, SharedPtr< Sprite2D > > TileSetMap;
-    HashMap< String, Vector<PoligonVertex*>* > PoligonMap;
+    HashMap< String, Vector<PolygonVertex *>* > PoligonMap;
 
     String CurrentType;
 
@@ -216,11 +216,11 @@ private:
 
 
     Vector2 prevPositionLayer;
-    Vector<PoligonVertex*>* CurrentPoligon;
-    Vector< Vector<PoligonVertex*>* > ListPoligon;
-    PoligonVertex* CurrentVertex;
-    PoligonVertex* CurrentPrevVertex;
-    PoligonVertex* CurrentNextVertex;
+    Vector<PolygonVertex *>* CurrentPoligon;
+    Vector< Vector<PolygonVertex *>* > ListPoligon;
+    PolygonVertex * CurrentVertex;
+    PolygonVertex * CurrentPrevVertex;
+    PolygonVertex * CurrentNextVertex;
 
 };
 

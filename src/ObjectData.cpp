@@ -1,6 +1,6 @@
 
 #include "ObjectData.h"
-#include "Node.h"
+#include "Urho3D/Scene/Node.h"
 
 
 ObjectData::ObjectData(Context* context): Component(context)

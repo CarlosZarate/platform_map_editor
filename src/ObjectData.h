@@ -1,16 +1,16 @@
 
 #pragma once
 
-#include "Object.h"
-#include "Context.h"
-#include "Vector2.h"
-#include "Component.h"
+#include "Urho3D/Core/Object.h"
+#include "Urho3D/Core/Context.h"
+#include "Urho3D/Math/Vector2.h"
+#include "Urho3D/Scene/Component.h"
 
 using namespace Urho3D;
 
 class ObjectData: public Component
 {
-    OBJECT(ObjectData);
+    URHO3D_OBJECT(ObjectData, Component);
 public:
     ObjectData(Context* context);
     static void RegisterObject(Context* context);
