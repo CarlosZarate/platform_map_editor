@@ -31,7 +31,7 @@ public:
     void SetClear();
     void setSelect();
     void setUnselect();
-    void setSelectPoligon();
+    void setSelectPolygon();
 private:
     Vector2 vector_;
 };

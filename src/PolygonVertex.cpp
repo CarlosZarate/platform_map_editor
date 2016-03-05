@@ -85,7 +85,7 @@ void PolygonVertex::setUnselect()
 	staticSprite->SetColor(Color(Color::WHITE,1));
 }
 
-void PolygonVertex::setSelectPoligon()
+void PolygonVertex::setSelectPolygon()
 {
     StaticSprite2D* staticSprite = GetComponent<StaticSprite2D>();
 	staticSprite->SetColor(Color(Color::YELLOW,1));

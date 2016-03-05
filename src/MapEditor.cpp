@@ -257,38 +257,39 @@ void MapEditor::LoadMap()
     JSONValue rootDataJson = mapData->GetRoot();
     JSONArray polygonsJSON = rootDataJson.Get("polygons").GetArray();
 
-    Vector<String> keys = PoligonMap.Keys();
+    Vector<String> keys = PolygonMap.Keys();
     for(int i = 0; i < keys.Size(); i++)
     {
-        RemovePoligon(keys[i]);
+        RemovePolygon(keys[i]);
     }
-    while(!ListNodePoligonsPhysics.Empty())
+    while(!ListNodePolygonsPhysics.Empty())
     {
-        Node* nodeRemove = ListNodePoligonsPhysics.Back();
+        Node* nodeRemove = ListNodePolygonsPhysics.Back();
         if(nodeRemove)
         {
             nodeRemove->Remove();
-            ListNodePoligonsPhysics.Pop();
+            ListNodePolygonsPhysics.Pop();
         }
     }
-    PoligonMap.Clear();
-    ListPoligonTriangle.Clear();
-    PoligonCounter = 0;
+    PolygonMap.Clear();
+    ListPolygonTriangle.Clear();
+    PolygonCounter = 0;
     for(int i = 0 ; i < polygonsJSON.Size() ; i++)
     {
-        JSONValue polyonVertexArray = polygonsJSON[i].GetArray();
+        JSONArray polygonVertexArray = polygonsJSON[i].GetArray();
         Vector<PolygonVertex *>* polygon_ = new Vector<PolygonVertex *>();
-        PoligonMap.Insert(Pair<String, Vector<PolygonVertex *>*>("Poligon" + String(PoligonCounter), polygon_));
-        PoligonCounter++;
-        for(int j = 0; j < polyonVertexArray.Size(); j++)
+        PolygonMap.Insert(Pair<String, Vector<PolygonVertex *>*>("Polygon" + String(PolygonCounter), polygon_));
+        PolygonCounter++;
+        for(int j = 0; j < polygonVertexArray.Size(); j++)
         {
-            Vector2 v(polyonVertexArray[j].Get("x_").GetFloat(), polyonVertexArray[j].Get("y_").GetFloat());
-            polygon_->Push(CreatePoligonVertex(v));
+            Vector2 v(polygonVertexArray[j].Get("x_").GetFloat(), polygonVertexArray[j].Get("y_").GetFloat());
+            polygon_->Push(CreatePolygonVertex(v));
         }
-        UnselectPoligon(CurrentPoligon);
-        CurrentPoligon = polygon_;
-        SelectPoligon(polygon_);
+        UnselectPolygon(CurrentPolygon);
+        CurrentPolygon = polygon_;
+        SelectPolygon(polygon_);
     }
+    LoadPolygonList();
 }
 
 void MapEditor::SaveMap()
@@ -307,7 +308,7 @@ void MapEditor::SaveMap()
 
     JSONArray triangleArray;// = MapNodeJson.CreateChild("triangles",JSON_ARRAY);
 
-    for(RandomAccessIterator<Vector<EarTriangle*>*> i = ListPoligonTriangle.Begin(); i != ListPoligonTriangle.End(); i++)
+    for(RandomAccessIterator<Vector<EarTriangle*>*> i = ListPolygonTriangle.Begin(); i != ListPolygonTriangle.End(); i++)
     {
         Vector<EarTriangle*>* PolygonTriangles = *i;
         JSONArray polygon;
@@ -359,7 +360,7 @@ void MapEditor::SaveMap()
 
     JSONFile* mapData = new JSONFile(context_);
     JSONValue* PolygonsJson = &mapData->GetRoot();
-    Vector<Vector<PolygonVertex *>* > polygons = PoligonMap.Values();
+    Vector<Vector<PolygonVertex *>* > polygons = PolygonMap.Values();
     JSONArray jsonPolygonArray;
     for(RandomAccessIterator<Vector<PolygonVertex *>*> ps = polygons.Begin(); ps != polygons.End(); ps++)
     {
@@ -375,7 +376,7 @@ void MapEditor::SaveMap()
         }
         jsonPolygonArray.Push(JSONValue(polygonJson));
     }
-    PolygonsJson->Set("poligons",JSONValue(jsonPolygonArray));
+    PolygonsJson->Set("polygons",JSONValue(jsonPolygonArray));
     File mapDataFile(context_,GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Scenes/MapData.json", FILE_WRITE);
     mapData->Save(mapDataFile);
 }
@@ -457,7 +458,7 @@ void MapEditor::HandleUpdate(StringHash eventType, VariantMap& eventData)
     MoveCamera(timeStep*2);
 
     CreateGrids();
-    DrawPoligon();
+    DrawPolygon();
 
     if (drawRectangle)
         DrawRectangle( Rect(dragPointBegin, dragPointEnd) );
@@ -526,7 +527,7 @@ void MapEditor::HandleMouseMove(StringHash eventType, VariantMap& eventData)
             case PLATFORM:
                 dragPointEnd.x_ = GetDiscreetPosition().x_;
                 break;
-            case VERTEXPOLIGON:
+            case VERTEXPOLYGON:
                 if(currentKeyFunction == TRASLATE)
                     if(selectObject_)
                         CurrentVertex->SetVector(GetDiscreetPosition());
@@ -622,12 +623,12 @@ void MapEditor::bodyFunctions()
             }
         }
         break;
-    case POLIGONBODY:
+    case POLYGONBODY:
         if(currentKeyFunction == ADD)
         {
-            PoligonMap.Insert(Pair<String, Vector<PolygonVertex *>*>("Poligon" + String(PoligonCounter), CreatePoligon()));
-            PoligonCounter++;
-            LoadPoligonList();
+            PolygonMap.Insert(Pair<String, Vector<PolygonVertex *>*>("Polygon" + String(PolygonCounter), CreatePolygon()));
+            PolygonCounter++;
+            LoadPolygonList();
         }
         if(currentKeyFunction == REMOVE)
         {
@@ -636,11 +637,11 @@ void MapEditor::bodyFunctions()
             if (rigidBody)
             {
                 PolygonVertex * p = rigidBody->GetComponent<PolygonVertex>();
-                RemovePoligon(p);
+                RemovePolygon(p);
             }
         }
         break;
-    case VERTEXPOLIGON:
+    case VERTEXPOLYGON:
         PhysicsWorld2D* physicsWorld = scene_->GetComponent<PhysicsWorld2D>();
         RigidBody2D* rigidBody = physicsWorld->GetRigidBody(GetMousePositionXY());
         switch (currentKeyFunction)
@@ -669,9 +670,9 @@ void MapEditor::bodyFunctions()
                 CurrentVertex = rigidBody->GetComponent<PolygonVertex>();
                 if(CurrentVertex)
                 {
-                    if(CurrentPoligon)
+                    if(CurrentPolygon)
                     {
-                        if(CurrentPoligon->Remove(*(CurrentPoligon->Find(CurrentVertex))))
+                        if(CurrentPolygon->Remove(*(CurrentPolygon->Find(CurrentVertex))))
                         {
                             removenode = rigidBody->GetNode();
                             removenode->Remove();
@@ -682,14 +683,14 @@ void MapEditor::bodyFunctions()
             }
             break;
         case ADD:
-            if(CurrentPoligon)
+            if(CurrentPolygon)
             {
                 if(selectObject_)
                 {
                     nodevertex = scene_->CreateChild("vertex");
                     cvertex = nodevertex->CreateComponent<PolygonVertex>();
                     cvertex->SetVector(GetDiscreetPosition());
-                    insertVertex(CurrentPoligon, cvertex);
+                    insertVertex(CurrentPolygon, cvertex);
                 }
 
             }
@@ -810,7 +811,7 @@ void MapEditor::CreatePlatform(Vector2 p1, Vector2 p2, String typePlatform)
     pbox->SetRestitution(0.1f);
     pbox->SetCategoryBits(32768);
 
-    platdata->imagereference = pnode;
+    platData->imagereference = pnode;
 }
 
 void MapEditor::CreateMovablePlatform(Vector2 p1, Vector2 p2)
@@ -859,11 +860,11 @@ void MapEditor::CreateMovablePlatform(Vector2 p1, Vector2 p2)
     currentpd->imagereference = movplatformreference;
 }
 
-void MapEditor::DrawPoligon()
+void MapEditor::DrawPolygon()
 {
     DebugRenderer* debug = scene_->GetComponent<DebugRenderer>();
 
-    Vector<Vector<PolygonVertex *>* > polygons = PoligonMap.Values();
+    Vector<Vector<PolygonVertex *>* > polygons = PolygonMap.Values();
     for(RandomAccessIterator<Vector<PolygonVertex *>*> ps = polygons.Begin(); ps != polygons.End(); ps++)
     {
         Vector<PolygonVertex *>* polygon = *ps;
@@ -882,10 +883,10 @@ void MapEditor::DrawPoligon()
         }
     }
 
-    for(RandomAccessIterator<Vector<EarTriangle*>*> i = ListPoligonTriangle.Begin(); i != ListPoligonTriangle.End(); i++)
+    for(RandomAccessIterator<Vector<EarTriangle*>*> i = ListPolygonTriangle.Begin(); i != ListPolygonTriangle.End(); i++)
     {
-        Vector<EarTriangle*>* PoligonTriangles = *i;
-        for(RandomAccessIterator<EarTriangle*> j = PoligonTriangles->Begin(); j != PoligonTriangles->End(); j++)
+        Vector<EarTriangle*>* PolygonTriangles = *i;
+        for(RandomAccessIterator<EarTriangle*> j = PolygonTriangles->Begin(); j != PolygonTriangles->End(); j++)
         {
             EarTriangle* et = *j;
 
@@ -975,12 +976,12 @@ void MapEditor::HandleSelectSecondList(StringHash eventType, VariantMap& eventDa
     switch (currentFunction)
     {
     case DRAWBODY:
-        UnselectPoligon(CurrentPoligon);
-        CurrentPoligon = PoligonMap[SelectedText->GetText()];
-        SelectPoligon(CurrentPoligon);
+        UnselectPolygon(CurrentPolygon);
+        CurrentPolygon = PolygonMap[SelectedText->GetText()];
+        SelectPolygon(CurrentPolygon);
         switch (currentBodyType)
         {
-        case VERTEXPOLIGON:
+        case VERTEXPOLYGON:
             break;
         }
         break;
@@ -1041,42 +1042,42 @@ void MapEditor::HandleLoadPreview(StringHash eventType, VariantMap& eventData)
         {
             currentBodyType = MOVPLATFORM;
         }
-        if(SelectedText->GetText() == "PoligonBody")
+        if(SelectedText->GetText() == "PolygonBody")
         {
-            currentBodyType = POLIGONBODY;
+            currentBodyType = POLYGONBODY;
         }
-        if(SelectedText->GetText() == "VertexPoligon")
+        if(SelectedText->GetText() == "VertexPolygon")
         {
-            currentBodyType = VERTEXPOLIGON;
+            currentBodyType = VERTEXPOLYGON;
         }
     }
 }
 
-void MapEditor::SelectPoligon(Vector<PolygonVertex *>* poligon)
+void MapEditor::SelectPolygon(Vector<PolygonVertex *>* polygon)
 {
-    if(!poligon)
+    if(!polygon)
         return;
-    for(int i = 0; i < poligon->Size(); i++)
+    for(int i = 0; i < polygon->Size(); i++)
     {
-       (poligon->operator[](i))->setSelectPoligon();
+       (polygon->operator[](i))->setSelectPolygon();
     }
 }
 
-void MapEditor::UnselectPoligon(Vector<PolygonVertex *>* poligon)
+void MapEditor::UnselectPolygon(Vector<PolygonVertex *>* polygon)
 {
-    if(!poligon)
+    if(!polygon)
         return;
-    for(int i=0; i < poligon->Size(); i++)
+    for(int i=0; i < polygon->Size(); i++)
     {
-       (poligon->operator[](i))->setUnselect();
+       (polygon->operator[](i))->setUnselect();
     }
 }
 
-void MapEditor::LoadPoligonList()
+void MapEditor::LoadPolygonList()
 {
     ListView* seconditemlist = (ListView*)window_->GetChild("SecondList",true);
     seconditemlist->RemoveAllItems();
-    Vector<String> keys = PoligonMap.Keys();
+    Vector<String> keys = PolygonMap.Keys();
     for( int i = 0 ; i < keys.Size() ; i++ )
     {
         Text* item = new Text(context_);
@@ -1118,7 +1119,7 @@ void MapEditor::LoadSelectedType(String type)
     if(type == "Body")
     {
         currentFunction = DRAWBODY;
-        LoadPoligonList();
+        LoadPolygonList();
     }
 
     if(type == "Characters")
@@ -1127,62 +1128,62 @@ void MapEditor::LoadSelectedType(String type)
         currentFunction = DRAWENV;
 }
 
-bool MapEditor::RemovePoligon(PolygonVertex * p)
+bool MapEditor::RemovePolygon(PolygonVertex * p)
 {
-    Vector<String> keys = PoligonMap.Keys();
+    Vector<String> keys = PolygonMap.Keys();
     for(int i = 0; i < keys.Size(); i++)
     {
-        Vector<PolygonVertex *>* poligon = PoligonMap[keys[i]];
-        if(poligon->Contains(p))
+        Vector<PolygonVertex *>* polygon = PolygonMap[keys[i]];
+        if(polygon->Contains(p))
         {
-            while(!poligon->Empty())
+            while(!polygon->Empty())
             {
-                PolygonVertex * pv = poligon->Back();
+                PolygonVertex * pv = polygon->Back();
                 Node* noderemove = pv->GetNode();
                 noderemove->Remove();
-                poligon->Pop();
+                polygon->Pop();
             }
-            PoligonMap.Erase(keys[i]);
+            PolygonMap.Erase(keys[i]);
         }
     }
-    UnselectPoligon(CurrentPoligon);
-    CurrentPoligon = 0;
-    LoadPoligonList();
+    UnselectPolygon(CurrentPolygon);
+    CurrentPolygon = 0;
+    LoadPolygonList();
 }
 
-bool MapEditor::RemovePoligon(String key)
+bool MapEditor::RemovePolygon(String key)
 {
-    Vector<PolygonVertex *>* poligon = PoligonMap[key];
-    while(!poligon->Empty())
+    Vector<PolygonVertex *>* polygon = PolygonMap[key];
+    while(!polygon->Empty())
     {
-        PolygonVertex * pv = poligon->Back();
+        PolygonVertex * pv = polygon->Back();
         Node* noderemove = pv->GetNode();
         noderemove->Remove();
-        poligon->Pop();
+        polygon->Pop();
     }
-    PoligonMap.Erase(key);
-    UnselectPoligon(CurrentPoligon);
-    CurrentPoligon = 0;
-    LoadPoligonList();
+    PolygonMap.Erase(key);
+    UnselectPolygon(CurrentPolygon);
+    CurrentPolygon = 0;
+    LoadPolygonList();
 }
 
-Vector<PolygonVertex *>* MapEditor::CreatePoligon()
+Vector<PolygonVertex *>* MapEditor::CreatePolygon()
 {
-    Vector<PolygonVertex *>* poligon_ = new Vector<PolygonVertex *>();
+    Vector<PolygonVertex *>* polygon_ = new Vector<PolygonVertex *>();
 
     Vector2 pos = GetDiscreetPosition();
-    poligon_->Push(CreatePoligonVertex(Vector2(pos)));
-    poligon_->Push(CreatePoligonVertex(Vector2(pos.x_,pos.y_+0.7f)));
-    poligon_->Push(CreatePoligonVertex(Vector2(pos.x_+0.7f,pos.y_+0.7f)));
-    poligon_->Push(CreatePoligonVertex(Vector2(pos.x_+0.7f,pos.y_)));
+    polygon_->Push(CreatePolygonVertex(Vector2(pos)));
+    polygon_->Push(CreatePolygonVertex(Vector2(pos.x_,pos.y_+0.7f)));
+    polygon_->Push(CreatePolygonVertex(Vector2(pos.x_+0.7f,pos.y_+0.7f)));
+    polygon_->Push(CreatePolygonVertex(Vector2(pos.x_+0.7f,pos.y_)));
 
-    UnselectPoligon(CurrentPoligon);
-    CurrentPoligon = poligon_;
-    SelectPoligon(poligon_);
-    return poligon_;
+    UnselectPolygon(CurrentPolygon);
+    CurrentPolygon = polygon_;
+    SelectPolygon(polygon_);
+    return polygon_;
 }
 
-PolygonVertex * MapEditor::CreatePoligonVertex(Vector2 pos)
+PolygonVertex * MapEditor::CreatePolygonVertex(Vector2 pos)
 {
     Node* nv = scene_->CreateChild("vertex");
     PolygonVertex * pv = nv->CreateComponent<PolygonVertex>();
@@ -1190,54 +1191,54 @@ PolygonVertex * MapEditor::CreatePoligonVertex(Vector2 pos)
     return pv;
 }
 
-void MapEditor::insertVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * newvertex)
+void MapEditor::insertVertex(Vector<PolygonVertex *>* polygon, PolygonVertex * newvertex)
 {
     if(!CurrentVertex)
         return;
     unsigned index = 0;
-    for(RandomAccessIterator<PolygonVertex*> v = poligon->Begin(); v != poligon->End(); v++)
+    for(RandomAccessIterator<PolygonVertex*> v = polygon->Begin(); v != polygon->End(); v++)
     {
-        if(poligon->Find(CurrentVertex) == v)
+        if(polygon->Find(CurrentVertex) == v)
             break;
         index++;
     }
-    CurrentVertex->setSelectPoligon();
-    poligon->Insert(index, newvertex);
+    CurrentVertex->setSelectPolygon();
+    polygon->Insert(index, newvertex);
     CurrentVertex = newvertex;
     CurrentVertex->setSelect();
 }
 
-/* Process poligon */
+/* Process polygon */
 
 void MapEditor::HandleProcess(StringHash eventType, VariantMap& eventData)
 {
-    ListPoligonTriangle.Clear();
-    Vector<Vector<PolygonVertex *>* > poligons = PoligonMap.Values();
-    for(RandomAccessIterator<Vector<PolygonVertex *>*> ps = poligons.Begin(); ps != poligons.End(); ps++)
+    ListPolygonTriangle.Clear();
+    Vector<Vector<PolygonVertex *>* > polygons = PolygonMap.Values();
+    for(RandomAccessIterator<Vector<PolygonVertex *>*> ps = polygons.Begin(); ps != polygons.End(); ps++)
     {
-        Vector<PolygonVertex *>* poligon = *ps;
-        Vector<EarTriangle*>* PoligonTriagles = new Vector<EarTriangle*>();
-        ListPoligonTriangle.Push(PoligonTriagles);
-        cleanVertex(poligon);
-        if(!poligon->Empty() || poligon->Size() > 3)
+        Vector<PolygonVertex *>* polygon = *ps;
+        Vector<EarTriangle*>* PolygonTriagles = new Vector<EarTriangle*>();
+        ListPolygonTriangle.Push(PolygonTriagles);
+        cleanVertex(polygon);
+        if(!polygon->Empty() || polygon->Size() > 3)
         {
-            PolygonVertex * p = poligon->operator[](0);
-            int counter = poligon->Size();
+            PolygonVertex * p = polygon->operator[](0);
+            int counter = polygon->Size();
             while( counter > 3)
             {
                 p->isEvalue = true;
-                Vector2 p1 = prevVertex(poligon,p);
+                Vector2 p1 = prevVertex(polygon,p);
                 Vector2 p2 = p->GetVector();
-                Vector2 p3 = nextVertex(poligon,p);
+                Vector2 p3 = nextVertex(polygon,p);
                 if(!ccw(p1, p2, p3))
                 {
                     bool noear = false;
-                    for(int j = 0; j < poligon->Size(); j++)
+                    for(int j = 0; j < polygon->Size(); j++)
                     {
-                        PolygonVertex * testpoligon = poligon->operator[](j);
-                        if(!testpoligon->isEvalue && !testpoligon->isProcess)
+                        PolygonVertex * testpolygon = polygon->operator[](j);
+                        if(!testpolygon->isEvalue && !testpolygon->isProcess)
                         {
-                            if(isInTriangle(testpoligon->GetVector(),p1,p2,p3))
+                            if(isInTriangle(testpolygon->GetVector(),p1,p2,p3))
                             {
                                 noear = true;
                                 break;
@@ -1246,7 +1247,7 @@ void MapEditor::HandleProcess(StringHash eventType, VariantMap& eventData)
                     }
                     if(!noear)
                     {
-                        PoligonTriagles->Push(new EarTriangle(p1,p2,p3));
+                        PolygonTriagles->Push(new EarTriangle(p1,p2,p3));
                         p->isProcess = true;
                         counter--;
                     }
@@ -1258,40 +1259,40 @@ void MapEditor::HandleProcess(StringHash eventType, VariantMap& eventData)
 
             }
             Vector<Vector2> lasttriangle;
-            for(int j = 0; j < poligon->Size(); j++)
+            for(int j = 0; j < polygon->Size(); j++)
             {
-                if(!(poligon->operator[](j))->isProcess)
-                    lasttriangle.Push((poligon->operator[](j))->GetVector());
+                if(!(polygon->operator[](j))->isProcess)
+                    lasttriangle.Push((polygon->operator[](j))->GetVector());
             }
-            PoligonTriagles->Push(new EarTriangle(lasttriangle[0],lasttriangle[1],lasttriangle[2]));
+            PolygonTriagles->Push(new EarTriangle(lasttriangle[0],lasttriangle[1],lasttriangle[2]));
         }
     }
-    ProcessPoligonPhysics();
+    ProcessPolygonPhysics();
     Button* processbutton = static_cast<Button*>(eventData["Element"].GetPtr());
     processbutton->SetFocus(false);
 }
 
-void MapEditor::ProcessPoligonPhysics()
+void MapEditor::ProcessPolygonPhysics()
 {
 
-    while(!ListNodePoligonsPhysics.Empty())
+    while(!ListNodePolygonsPhysics.Empty())
     {
-        Node* noderemove = ListNodePoligonsPhysics.Back();
+        Node* noderemove = ListNodePolygonsPhysics.Back();
         if(noderemove)
         {
             noderemove->Remove();
-            ListNodePoligonsPhysics.Pop();
+            ListNodePolygonsPhysics.Pop();
         }
     }
-    for(RandomAccessIterator<Vector<EarTriangle*>*> i = ListPoligonTriangle.Begin(); i != ListPoligonTriangle.End(); i++)
+    for(RandomAccessIterator<Vector<EarTriangle*>*> i = ListPolygonTriangle.Begin(); i != ListPolygonTriangle.End(); i++)
     {
-        Node* poligonnode = scene_->CreateChild("Wall");
-        ListNodePoligonsPhysics.Push(poligonnode);
-        RigidBody2D* body = poligonnode->CreateComponent<RigidBody2D>();
+        Node* polygonnode = scene_->CreateChild("Wall");
+        ListNodePolygonsPhysics.Push(polygonnode);
+        RigidBody2D* body = polygonnode->CreateComponent<RigidBody2D>();
         body->SetBodyType(BT_STATIC);
 
-        Vector<EarTriangle*>* PoligonTriangles = *i;
-        for(RandomAccessIterator<EarTriangle*> j = PoligonTriangles->Begin(); j != PoligonTriangles->End(); j++)
+        Vector<EarTriangle*>* PolygonTriangles = *i;
+        for(RandomAccessIterator<EarTriangle*> j = PolygonTriangles->Begin(); j != PolygonTriangles->End(); j++)
         {
             EarTriangle* et = *j;
 
@@ -1300,7 +1301,7 @@ void MapEditor::ProcessPoligonPhysics()
             vertices.Push(et->p2_);
             vertices.Push(et->p3_);
 
-            CollisionPolygon2D* triangle = poligonnode->CreateComponent<CollisionPolygon2D>();
+            CollisionPolygon2D* triangle = polygonnode->CreateComponent<CollisionPolygon2D>();
             triangle->SetVertices(vertices);
             triangle->SetDensity(1.0f);
             triangle->SetFriction(0.0f);
@@ -1310,18 +1311,18 @@ void MapEditor::ProcessPoligonPhysics()
     }
 }
 
-void MapEditor::cleanVertex(Vector<PolygonVertex *>* poligon)
+void MapEditor::cleanVertex(Vector<PolygonVertex *>* polygon)
 {
-    for(int k = 0; k < poligon->Size(); k++)
+    for(int k = 0; k < polygon->Size(); k++)
     {
-        (poligon->operator[](k))->isEvalue = false;
-        (poligon->operator[](k))->isProcess = false;
+        (polygon->operator[](k))->isEvalue = false;
+        (polygon->operator[](k))->isProcess = false;
     }
 }
 
-Vector2 MapEditor::nextVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * P)
+Vector2 MapEditor::nextVertex(Vector<PolygonVertex *>* polygon, PolygonVertex * P)
 {
-    for(RandomAccessIterator<PolygonVertex*> p_ = poligon->Find(P)+1; p_ != poligon->End(); p_++)
+    for(RandomAccessIterator<PolygonVertex*> p_ = polygon->Find(P)+1; p_ != polygon->End(); p_++)
     {
         PolygonVertex * pv = *p_;
         if(!pv->isProcess)
@@ -1331,7 +1332,7 @@ Vector2 MapEditor::nextVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * 
             return  pv->GetVector();
         }
     }
-    for(RandomAccessIterator<PolygonVertex*> p_ = poligon->Begin(); p_ != poligon->Find(P); p_++)
+    for(RandomAccessIterator<PolygonVertex*> p_ = polygon->Begin(); p_ != polygon->Find(P); p_++)
     {
         PolygonVertex * pv = *p_;
         if(!pv->isProcess)
@@ -1344,11 +1345,11 @@ Vector2 MapEditor::nextVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * 
     return Vector2::ZERO;
 }
 
-Vector2 MapEditor::prevVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * P)
+Vector2 MapEditor::prevVertex(Vector<PolygonVertex *>* polygon, PolygonVertex * P)
 {
-    if(poligon->Find(P)!= poligon->Begin())
+    if(polygon->Find(P)!= polygon->Begin())
     {
-        for(RandomAccessIterator<PolygonVertex*> p_ = poligon->Find(P)-1; p_ >= poligon->Begin(); p_--)
+        for(RandomAccessIterator<PolygonVertex*> p_ = polygon->Find(P)-1; p_ >= polygon->Begin(); p_--)
         {
             PolygonVertex * pv = *p_;
             if(!pv->isProcess)
@@ -1360,7 +1361,7 @@ Vector2 MapEditor::prevVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * 
         }
     }
 
-    for(RandomAccessIterator<PolygonVertex*> p_ = poligon->End()-1; p_ != poligon->Find(P); p_--)
+    for(RandomAccessIterator<PolygonVertex*> p_ = polygon->End()-1; p_ != polygon->Find(P); p_--)
     {
         PolygonVertex * pv = *p_;
         if(!pv->isProcess)
@@ -1394,4 +1395,4 @@ bool MapEditor::isInTriangle (Vector2 pt, Vector2 v1, Vector2 v2, Vector2 v3)
     return ((b1 == b2) && (b2 == b3));
 }
 
-/* End Process poligon */
+/* End Process polygon */

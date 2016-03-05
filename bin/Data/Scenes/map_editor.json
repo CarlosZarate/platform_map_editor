@@ -13,8 +13,8 @@
     "Platform",
     "MidlePlatform",
     "MovPlatform",
-    "PoligonBody",
-    "VertexPoligon"
+    "PolygonBody",
+    "VertexPolygon"
   ],
   "Entorno": [
     "Obj1",

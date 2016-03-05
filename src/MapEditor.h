@@ -59,8 +59,8 @@ enum TypeCharacter
 enum TypeBody
 {
     PLATFORM,
-    POLIGONBODY,
-    VERTEXPOLIGON,
+    POLYGONBODY,
+    VERTEXPOLYGON,
     MIDLEPLATFORM,
     MOVPLATFORM
 };
@@ -129,15 +129,15 @@ private:
 
     void LoadSelectedType(String type);
 
-    void DrawPoligon();
+    void DrawPolygon();
 
-    void ProcessPoligonPhysics();
+    void ProcessPolygonPhysics();
 
     void bodyFunctions();
 
-    void SelectPoligon(Vector<PolygonVertex *>* poligon);
+    void SelectPolygon(Vector<PolygonVertex *>* polygon);
 
-    void UnselectPoligon(Vector<PolygonVertex *>* poligon);
+    void UnselectPolygon(Vector<PolygonVertex *>* polygon);
 
     float Sign (Vector2 p1, Vector2 p2, Vector2 p3);
 
@@ -145,21 +145,21 @@ private:
 
     bool ccw (Vector2 p1, Vector2 p2, Vector2 p3);
 
-    Vector2 nextVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * P);
-    Vector2 prevVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * P);
+    Vector2 nextVertex(Vector<PolygonVertex *>* polygon, PolygonVertex * P);
+    Vector2 prevVertex(Vector<PolygonVertex *>* polygon, PolygonVertex * P);
 
-    void cleanVertex(Vector<PolygonVertex *>* poligon);
+    void cleanVertex(Vector<PolygonVertex *>* polygon);
 
-    void insertVertex(Vector<PolygonVertex *>* poligon, PolygonVertex * newvertex);
+    void insertVertex(Vector<PolygonVertex *>* polygon, PolygonVertex * newvertex);
 
-    Vector<PolygonVertex *>* CreatePoligon();
+    Vector<PolygonVertex *>* CreatePolygon();
 
-    PolygonVertex * CreatePoligonVertex(Vector2 pos);
+    PolygonVertex * CreatePolygonVertex(Vector2 pos);
 
-    bool RemovePoligon(PolygonVertex * p);
-    bool RemovePoligon(String key);
+    bool RemovePolygon(PolygonVertex * p);
+    bool RemovePolygon(String key);
 
-    void LoadPoligonList();
+    void LoadPolygonList();
 
     /// The Window.
     SharedPtr<Window> window_;
@@ -179,9 +179,9 @@ private:
 
     JSONValue rootjson;
 
-    int PoligonCounter = 0;
+    int PolygonCounter = 0;
     HashMap< String, SharedPtr< Sprite2D > > TileSetMap;
-    HashMap< String, Vector<PolygonVertex *>* > PoligonMap;
+    HashMap< String, Vector<PolygonVertex *>* > PolygonMap;
 
     String CurrentType;
 
@@ -192,7 +192,7 @@ private:
 
     Function currentFunction = DRAWBODY;
     TypeCharacter currentCharType = PLAYER;
-    TypeBody currentBodyType = POLIGONBODY;
+    TypeBody currentBodyType = POLYGONBODY;
     TypeKeyFunction currentKeyFunction = NONE;
 
     /// Flag for drawing debug geometry.
@@ -202,8 +202,8 @@ private:
     Camera* camera_;
 
     Vector<EarTriangle*> earTriagles;
-    Vector< Vector<EarTriangle*>* > ListPoligonTriangle;
-    Vector<Node*> ListNodePoligonsPhysics;
+    Vector< Vector<EarTriangle*>* > ListPolygonTriangle;
+    Vector<Node*> ListNodePolygonsPhysics;
     Vector<Node*> CuadrilateralPhysics;
     Vector<PlatformData*> PlatformsList;
     Vector<ObjectData*> ObjectList;
@@ -216,8 +216,8 @@ private:
 
 
     Vector2 prevPositionLayer;
-    Vector<PolygonVertex *>* CurrentPoligon;
-    Vector< Vector<PolygonVertex *>* > ListPoligon;
+    Vector<PolygonVertex *>* CurrentPolygon;
+    Vector< Vector<PolygonVertex *>* > ListPolygon;
     PolygonVertex * CurrentVertex;
     PolygonVertex * CurrentPrevVertex;
     PolygonVertex * CurrentNextVertex;
