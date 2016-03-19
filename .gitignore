@@ -7,5 +7,5 @@ obj/*
 *.dll
 *.depend
 *.layout
-.idea/
 CMake/
+.idea/
